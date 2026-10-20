@@ -3,6 +3,7 @@ import { criarBase, RAIO_BASE, ALTURA_SUPERFICIE } from './base.js';
 import { carregarSlowpoke } from './recursos.js';
 import { desenharModelo } from './cobblemon.js';
 import { idleSlowpoke } from './animacoes.js';
+import { posicaoNaPraia } from './praia.js';
 import { vertexShader, fragmentShader } from './shaders/basico.js';
 
 const canvas = document.querySelector('#cena');
@@ -26,7 +27,11 @@ function iniciar() {
 
   const program = twgl.createProgramInfo(gl, [vertexShader, fragmentShader]);
   if (!program) throw new Error('Falha ao preparar os shaders.');
-  const parts = criarBase(gl);
+  const { partes: parts, alturaTerreno } = criarBase(gl);
+  // Um pouco mais para o interior, com as quatro patas sobre o patamar de areia.
+  const [slowpokeX, slowpokeZ] = posicaoNaPraia(-3);
+  const slowpokePosition = [slowpokeX,
+    ALTURA_SUPERFICIE + alturaTerreno(slowpokeX, slowpokeZ) + 0.01, slowpokeZ];
   const whiteTexture = twgl.createTexture(gl, { src: [255, 255, 255, 255] });
   let slowpoke = null;
   carregarSlowpoke(gl).then(modelo => { slowpoke = modelo; }).catch(mostrarErro);
@@ -90,13 +95,14 @@ function iniciar() {
 
     gl.useProgram(program.program);
     gl.enable(gl.CULL_FACE);
-    twgl.setUniforms(program, { u_useTexture: false, u_texture: whiteTexture });
     for (const part of parts) {
       twgl.setBuffersAndAttributes(gl, program, part.buffer);
       twgl.setUniforms(program, {
         u_worldViewProjection: m4.multiply(viewProjection, part.world),
         u_worldInverseTranspose: m4.transpose(m4.inverse(part.world)),
         u_color: part.color,
+        u_useTexture: Boolean(part.texture),
+        u_texture: part.texture || whiteTexture,
       });
       twgl.drawBufferInfo(gl, part.buffer);
     }
@@ -106,7 +112,7 @@ function iniciar() {
       gl.disable(gl.CULL_FACE);
       desenharModelo(gl, program, slowpoke.ossos, slowpoke.textura,
         idleSlowpoke(animationTime), viewProjection,
-        [0, ALTURA_SUPERFICIE + 0.01, 0], 0.18, Math.PI);
+        slowpokePosition, 0.18, Math.PI);
     }
     requestAnimationFrame(render);
   }
