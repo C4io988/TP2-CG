@@ -2,7 +2,7 @@
 
 Trabalho de Computação Gráfica em JavaScript, WebGL e TWGL.js.
 
-Por enquanto: ilha de contorno irregular, mar e Slowpoke em repouso sobre uma base circular.
+Por enquanto: ilha e relevo em blocos, mar e Slowpoke em repouso sobre uma base quadrada.
 Abra `index.html` pelo Live Server. Arraste para girar e use o scroll para zoom.
 
 ## Créditos
