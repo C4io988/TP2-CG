@@ -3,7 +3,8 @@
 Trabalho de Computação Gráfica em JavaScript, WebGL e TWGL.js.
 
 Por enquanto: ilha e relevo em blocos, mar e Slowpoke em repouso sobre uma base quadrada.
-Abra `index.html` pelo Live Server. Arraste para girar e use o scroll para zoom.
+Abra `index.html` pelo Live Server. `1`: câmera automática; `2`: câmera manual
+(arraste para girar). Use o scroll para zoom nas duas.
 
 ## Créditos
 

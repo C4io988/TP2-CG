@@ -10,6 +10,15 @@
   <body>
     <main>
       <canvas id="cena" aria-label="Ilha em blocos sobre uma base quadrada de pokébola"></canvas>
+      <details class="comandos">
+        <summary>Comandos</summary>
+        <dl>
+          <div><dt><kbd>1</kbd></dt><dd>Câmera automática</dd></div>
+          <div><dt><kbd>2</kbd></dt><dd>Câmera manual</dd></div>
+          <div><dt>Arrastar</dt><dd>Girar a câmera manual</dd></div>
+          <div><dt>Scroll</dt><dd>Zoom nas duas câmeras</dd></div>
+        </dl>
+      </details>
       <p id="erro" role="alert" hidden></p>
     </main>
     <script type="module" src="./src/main.js"></script>

@@ -18,3 +18,24 @@ main { min-height: 0; position: relative; }
 canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
 canvas:active { cursor: grabbing; }
 #erro { position: absolute; inset: 20px; color: #922d2d; }
+
+.comandos {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  max-width: calc(100% - 32px);
+  background: #f8fbf5ed;
+  border: 2px solid #52616a;
+  box-shadow: 3px 3px 0 #27374025;
+  font-size: 13px;
+}
+
+.comandos summary { padding: 10px 14px; cursor: pointer; font-weight: 650; }
+.comandos summary:focus-visible { outline: 2px solid #30628b; outline-offset: 3px; }
+.comandos[open] summary { border-bottom: 1px solid #52616a40; }
+.comandos dl { margin: 0; padding: 12px 14px; }
+.comandos dl > div { display: grid; grid-template-columns: 64px 1fr; gap: 12px; align-items: center; }
+.comandos dl > div + div { margin-top: 10px; }
+.comandos dt { font-weight: 600; }
+.comandos dd { margin: 0; }
+.comandos kbd { display: inline-block; min-width: 24px; padding: 2px 6px; text-align: center; font: inherit; border: 1px solid #83919a; background: #fff; }
