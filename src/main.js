@@ -80,7 +80,11 @@ function iniciar() {
       target[1] + Math.sin(camera.elevation) * camera.distance,
       Math.cos(camera.azimuth) * horizontal,
     ];
-    const projection = m4.perspective(Math.PI / 4, canvas.width / Math.max(canvas.height, 1), 0.1, 150);
+    // Um plano próximo menos extremo melhora a separação entre olho e pupila.
+    // O plano distante acompanha o zoom e mantém toda a base dentro da cena.
+    const near = 1;
+    const far = camera.distance + RAIO_BASE * 2;
+    const projection = m4.perspective(Math.PI / 4, canvas.width / Math.max(canvas.height, 1), near, far);
     const view = m4.inverse(m4.lookAt(eye, target, [0, 1, 0]));
     const viewProjection = m4.multiply(projection, view);
 
