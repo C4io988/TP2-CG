@@ -1,6 +1,21 @@
 import * as twgl from '../vendor/twgl-full.module.js';
 import { criarModelo } from './cobblemon.js';
 
+export async function carregarShaders() {
+  async function carregarTexto(arquivo) {
+    const url = new URL(`./shaders/${arquivo}`, import.meta.url);
+    const resposta = await fetch(url);
+    if (!resposta.ok) throw new Error(`Shader ${arquivo}: HTTP ${resposta.status}`);
+    return resposta.text();
+  }
+
+  const [vertexShader, fragmentShader] = await Promise.all([
+    carregarTexto('basico.vert.glsl'),
+    carregarTexto('basico.frag.glsl'),
+  ]);
+  return { vertexShader, fragmentShader };
+}
+
 export async function carregarSlowpoke(gl) {
   // Caminhos relativos ao módulo para funcionar também em subdiretórios.
   const modeloUrl = new URL('../assets/pokemon/models/slowpoke.geo.json', import.meta.url);

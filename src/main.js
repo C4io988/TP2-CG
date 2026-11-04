@@ -1,20 +1,15 @@
 import * as twgl from '../vendor/twgl-full.module.js';
 import { criarBase, ALTURA_SUPERFICIE } from './base.js';
 import { criarCameras } from './cameras.js';
-import { carregarSlowpoke } from './recursos.js';
+import { carregarSlowpoke, carregarShaders } from './recursos.js';
 import { desenharModelo } from './cobblemon.js';
 import { idleSlowpoke } from './animacoes.js';
 import { posicaoNaPraia } from './praia.js';
-import { vertexShader, fragmentShader } from './shaders/basico.js';
 
 const canvas = document.querySelector('#cena');
 const errorMessage = document.querySelector('#erro');
 
-try {
-  iniciar();
-} catch (error) {
-  mostrarErro(error);
-}
+iniciar().catch(mostrarErro);
 
 function mostrarErro(error) {
   errorMessage.textContent = `Não foi possível abrir a cena: ${error.message}`;
@@ -22,10 +17,11 @@ function mostrarErro(error) {
   console.error(error);
 }
 
-function iniciar() {
+async function iniciar() {
   const gl = canvas.getContext('webgl', { antialias: true });
   if (!gl) throw new Error('WebGL não está disponível neste navegador.');
 
+  const { vertexShader, fragmentShader } = await carregarShaders();
   const program = twgl.createProgramInfo(gl, [vertexShader, fragmentShader]);
   if (!program) throw new Error('Falha ao preparar os shaders.');
   const { partes: parts, alturaTerreno } = criarBase(gl);
@@ -38,6 +34,14 @@ function iniciar() {
   carregarSlowpoke(gl).then(modelo => { slowpoke = modelo; }).catch(mostrarErro);
   const { m4 } = twgl;
   const cameras = criarCameras(canvas);
+  let iluminacaoAtiva = true;
+
+  window.addEventListener('keydown', evento => {
+    const foco = document.activeElement;
+    if (evento.repeat || evento.ctrlKey || evento.altKey || evento.metaKey
+      || ['INPUT', 'SELECT', 'TEXTAREA'].includes(foco?.tagName) || foco?.isContentEditable) return;
+    if (evento.key.toLowerCase() === 'l') iluminacaoAtiva = !iluminacaoAtiva;
+  });
 
   gl.enable(gl.DEPTH_TEST);
   gl.enable(gl.CULL_FACE);
@@ -55,13 +59,22 @@ function iniciar() {
     gl.clearColor(0.894, 0.929, 0.945, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    const { viewProjection } = cameras.matrizes(canvas.width / Math.max(canvas.height, 1));
+    const { eye, viewProjection } = cameras.matrizes(canvas.width / Math.max(canvas.height, 1));
 
     gl.useProgram(program.program);
+    twgl.setUniforms(program, {
+      u_cameraPosition: eye,
+      u_lightDirection: [-0.5, 1, 0.8],
+      u_lightColor: [1, 0.97, 0.90],
+      u_ambientColor: [0.90, 0.95, 1],
+      u_lightOn: iluminacaoAtiva,
+    });
     gl.enable(gl.CULL_FACE);
     for (const part of parts) {
       twgl.setBuffersAndAttributes(gl, program, part.buffer);
       twgl.setUniforms(program, {
+        ...part.material,
+        u_world: part.world,
         u_worldViewProjection: m4.multiply(viewProjection, part.world),
         u_worldInverseTranspose: m4.transpose(m4.inverse(part.world)),
         u_color: part.color,

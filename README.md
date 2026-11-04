@@ -1,10 +1,11 @@
 # Paraíso Pokémon
 
 Trabalho de Computação Gráfica em JavaScript, WebGL e TWGL.js.
+Shaders GLSL em `src/shaders/`, separados em vertex e fragment shader.
 
 Por enquanto: ilha e relevo em blocos, mar e Slowpoke em repouso sobre uma base quadrada.
 Abra `index.html` pelo Live Server. `1`: câmera automática; `2`: câmera manual
-(arraste para girar). Use o scroll para zoom nas duas.
+(arraste para girar). Use o scroll para zoom nas duas e `L` para alternar a iluminação Blinn-Phong.
 
 ## Créditos
 

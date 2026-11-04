@@ -1,4 +1,5 @@
 import * as twgl from '../vendor/twgl-full.module.js';
+import { MATERIAIS } from './materiais.js';
 
 const { m4 } = twgl;
 const RAD = Math.PI / 180;
@@ -133,6 +134,8 @@ export function desenharModelo(gl, programInfo, ossos, textura, animacao, viewPr
 
     twgl.setBuffersAndAttributes(gl, programInfo, osso.buffer);
     twgl.setUniforms(programInfo, {
+      ...MATERIAIS.slowpoke,
+      u_world: mundo,
       u_worldViewProjection: m4.multiply(viewProjection, mundo),
       u_worldInverseTranspose: m4.transpose(m4.inverse(mundo)),
       u_texture: textura,
