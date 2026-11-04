@@ -3,9 +3,10 @@ import { criarBase, ALTURA_SUPERFICIE } from './base.js';
 import { criarCameras } from './cameras.js';
 import { carregarSlowpoke, carregarShaders } from './recursos.js';
 import { desenharModelo } from './cobblemon.js';
-import { idleSlowpoke } from './animacoes.js';
 import { posicaoNaPraia } from './praia.js';
 import { criarCenario } from './cenario.js';
+import { criarNavegacao } from './navegacao.js';
+import { criarPasseioSlowpoke } from './personagens.js';
 
 const canvas = document.querySelector('#cena');
 const errorMessage = document.querySelector('#erro');
@@ -32,6 +33,8 @@ async function iniciar() {
   const [slowpokeX, slowpokeZ] = posicaoNaPraia(-3);
   const slowpokePosition = [slowpokeX,
     ALTURA_SUPERFICIE + alturaTerreno(slowpokeX, slowpokeZ) + 0.01, slowpokeZ];
+  const navegacao = criarNavegacao(alturaTerreno, cenario.objetos);
+  const passeio = criarPasseioSlowpoke(navegacao, slowpokePosition);
   const whiteTexture = twgl.createTexture(gl, { src: [255, 255, 255, 255] });
   let slowpoke = null;
   carregarSlowpoke(gl).then(modelo => { slowpoke = modelo; }).catch(mostrarErro);
@@ -43,7 +46,10 @@ async function iniciar() {
     const foco = document.activeElement;
     if (evento.repeat || evento.ctrlKey || evento.altKey || evento.metaKey
       || ['INPUT', 'SELECT', 'TEXTAREA'].includes(foco?.tagName) || foco?.isContentEditable) return;
-    if (evento.key.toLowerCase() === 'l') iluminacaoAtiva = !iluminacaoAtiva;
+    const tecla = evento.key.toLowerCase();
+    if (tecla === 'l') iluminacaoAtiva = !iluminacaoAtiva;
+    if (tecla === 'm') passeio.alternarPasseio();
+    if (tecla === 'r') passeio.reiniciar();
   });
 
   gl.enable(gl.DEPTH_TEST);
@@ -58,6 +64,7 @@ async function iniciar() {
     animationTime += delta;
     cenario.atualizar(animationTime);
     cameras.atualizar(delta);
+    if (slowpoke) passeio.atualizar(delta);
     twgl.resizeCanvasToDisplaySize(canvas, Math.min(window.devicePixelRatio || 1, 2));
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.clearColor(0.894, 0.929, 0.945, 1);
@@ -92,8 +99,8 @@ async function iniciar() {
       // Rosto e ponta da cauda incluem planos sem espessura: desenhar os dois lados.
       gl.disable(gl.CULL_FACE);
       desenharModelo(gl, program, slowpoke.ossos, slowpoke.textura,
-        idleSlowpoke(animationTime), viewProjection,
-        slowpokePosition, 0.18, Math.PI);
+        passeio.animacao(), viewProjection,
+        passeio.posicao, 0.18, passeio.angulo);
     }
     requestAnimationFrame(render);
   }

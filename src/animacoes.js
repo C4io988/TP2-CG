@@ -21,3 +21,37 @@ export function idleSlowpoke(tempo) {
     tail4: { rotation: [-10 + sin(fase - 160) * 2, -cos(fase / 2 - 160) * 6, 0] },
   };
 }
+
+// Adaptação do ground_walk: patas diagonais alternadas e cauda preservada acima do chão.
+export function caminhadaSlowpoke(tempo) {
+  const fase = tempo * 360;
+  const animacao = idleSlowpoke(tempo);
+  animacao.torso = { rotation: [-sin(fase * 2), -cos(fase) * 2, cos(fase) * 2],
+    position: [0, cos(fase * 2) * 0.2, 0] };
+  animacao.tail.rotation = [-20 + sin(fase * 2 - 60) * 2, -cos(fase - 60) * 5, 0];
+  animacao.tail2.rotation = [-35 + sin(fase * 2 - 120), -cos(fase - 120) * 6, 0];
+  animacao.tail3.rotation = [-22.5 + sin(fase * 2 - 180) * 4, -cos(fase - 160) * 6, 0];
+  animacao.tail4.rotation = [-10 + sin(fase * 2 - 210) * 5, -cos(fase - 210) * 6, 0];
+  for (const [nome, deslocamento] of [['leg_front_left', 180], ['leg_back_right', 180],
+    ['leg_front_right', 0], ['leg_back_left', 0]]) {
+    const ciclo = fase + deslocamento;
+    animacao[nome] = {
+      rotation: [-sin(ciclo) * 10, 0, 0],
+      position: [0, Math.max(0, cos(ciclo)) * 0.8 + Math.abs(sin(ciclo)) * 0.3, -sin(ciclo) * 0.6],
+    };
+  }
+  return animacao;
+}
+
+export function misturarAnimacoes(inicio, fim, peso) {
+  const resultado = {};
+  for (const nome of new Set([...Object.keys(inicio), ...Object.keys(fim)])) {
+    resultado[nome] = {};
+    for (const canal of ['rotation', 'position']) {
+      const a = inicio[nome]?.[canal] || [0, 0, 0];
+      const b = fim[nome]?.[canal] || [0, 0, 0];
+      resultado[nome][canal] = a.map((valor, eixo) => valor + (b[eixo] - valor) * peso);
+    }
+  }
+  return resultado;
+}

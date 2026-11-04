@@ -3,10 +3,12 @@
 Trabalho de Computação Gráfica em JavaScript, WebGL e TWGL.js.
 Shaders GLSL em `src/shaders/`, separados em vertex e fragment shader.
 
-Por enquanto: ilha e relevo em blocos, mar e Slowpoke em repouso sobre uma base quadrada.
+Por enquanto: ilha e relevo em blocos, mar e Slowpoke passeando sobre uma base quadrada.
 Coqueiros, vegetação, pedras, cocos, conchas, guarda-sol, catavento giratório e base de fogueira.
 Abra `index.html` pelo Live Server. `1`: câmera automática; `2`: câmera manual
 (arraste para girar). Use o scroll para zoom nas duas e `L` para alternar a iluminação Blinn-Phong.
+`M` pausa/retoma o passeio; `R` reinicia o Slowpoke. As rotas são internas, sem estradas visíveis.
+O passeio atual usa os patamares planos da areia, desviando dos objetos e da água.
 
 ## Créditos
 
