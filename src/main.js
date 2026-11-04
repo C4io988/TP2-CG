@@ -5,6 +5,7 @@ import { carregarSlowpoke, carregarShaders } from './recursos.js';
 import { desenharModelo } from './cobblemon.js';
 import { idleSlowpoke } from './animacoes.js';
 import { posicaoNaPraia } from './praia.js';
+import { criarCenario } from './cenario.js';
 
 const canvas = document.querySelector('#cena');
 const errorMessage = document.querySelector('#erro');
@@ -25,6 +26,8 @@ async function iniciar() {
   const program = twgl.createProgramInfo(gl, [vertexShader, fragmentShader]);
   if (!program) throw new Error('Falha ao preparar os shaders.');
   const { partes: parts, alturaTerreno } = criarBase(gl);
+  const cenario = criarCenario(gl, alturaTerreno);
+  parts.push(...cenario.partes);
   // Um pouco mais para o interior, com as quatro patas sobre o patamar de areia.
   const [slowpokeX, slowpokeZ] = posicaoNaPraia(-3);
   const slowpokePosition = [slowpokeX,
@@ -53,6 +56,7 @@ async function iniciar() {
     const delta = previousTime === null ? 0 : Math.min((now - previousTime) / 1000, 0.05);
     previousTime = now;
     animationTime += delta;
+    cenario.atualizar(animationTime);
     cameras.atualizar(delta);
     twgl.resizeCanvasToDisplaySize(canvas, Math.min(window.devicePixelRatio || 1, 2));
     gl.viewport(0, 0, canvas.width, canvas.height);
