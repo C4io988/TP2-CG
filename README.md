@@ -9,6 +9,9 @@ Abra `index.html` pelo Live Server. `1`: câmera automática; `2`: câmera manua
 (arraste para girar). Use o scroll para zoom nas duas e `L` para alternar a iluminação Blinn-Phong.
 `M` pausa/retoma o passeio; `R` reinicia o Slowpoke. As rotas são internas, sem estradas visíveis.
 O passeio atual usa os patamares planos da areia, desviando dos objetos e da água.
+`P` alterna: em pé, dormindo deitado, deitado com olhos e boca abertos e cauda na água.
+Em Comandos, escolha caminhar até a pose ou teletransportar para vê-la imediatamente.
+Outro `P` troca a pose; `M` sai da pose e retoma o passeio.
 
 ## Créditos
 

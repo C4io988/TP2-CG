@@ -47,9 +47,10 @@ export function misturarAnimacoes(inicio, fim, peso) {
   const resultado = {};
   for (const nome of new Set([...Object.keys(inicio), ...Object.keys(fim)])) {
     resultado[nome] = {};
-    for (const canal of ['rotation', 'position']) {
-      const a = inicio[nome]?.[canal] || [0, 0, 0];
-      const b = fim[nome]?.[canal] || [0, 0, 0];
+    for (const canal of ['rotation', 'position', 'scale']) {
+      const padrao = canal === 'scale' ? [1, 1, 1] : [0, 0, 0];
+      const a = inicio[nome]?.[canal] || padrao;
+      const b = fim[nome]?.[canal] || padrao;
       resultado[nome][canal] = a.map((valor, eixo) => valor + (b[eixo] - valor) * peso);
     }
   }

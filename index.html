@@ -9,14 +9,22 @@
   </head>
   <body>
     <main>
-      <canvas id="cena" aria-label="Ilha em blocos sobre uma base quadrada de pokébola"></canvas>
+      <canvas id="cena" tabindex="0" aria-label="Ilha em blocos sobre uma base quadrada de pokébola"></canvas>
       <details class="comandos">
         <summary>Comandos</summary>
+        <div class="modo-poses">
+          <label for="modo-poses">Troca de poses</label>
+          <select id="modo-poses">
+            <option value="andar">Caminhar até a pose</option>
+            <option value="instantaneo">Teletransportar para a pose</option>
+          </select>
+        </div>
         <dl>
           <div><dt><kbd>1</kbd></dt><dd>Câmera automática</dd></div>
           <div><dt><kbd>2</kbd></dt><dd>Câmera manual</dd></div>
           <div><dt><kbd>L</kbd></dt><dd>Ligar/desligar iluminação</dd></div>
-          <div><dt><kbd>M</kbd></dt><dd>Pausar/retomar passeio</dd></div>
+          <div><dt><kbd>P</kbd></dt><dd>Próxima das quatro poses</dd></div>
+          <div><dt><kbd>M</kbd></dt><dd>Pausar/retomar ou sair da pose</dd></div>
           <div><dt><kbd>R</kbd></dt><dd>Reiniciar o Slowpoke</dd></div>
           <div><dt>Arrastar</dt><dd>Girar a câmera manual</dd></div>
           <div><dt>Scroll</dt><dd>Zoom nas duas câmeras</dd></div>

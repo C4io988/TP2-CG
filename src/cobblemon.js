@@ -85,6 +85,7 @@ export function criarModelo(gl, geometria) {
       parent: bone.parent || null,
       pivo: bone.pivot || [0, 0, 0],
       rotacao: bone.rotation || [0, 0, 0],
+      vertices: new Float32Array(dados.position.data),
       buffer: dados.indices.length ? twgl.createBufferInfoFromArrays(gl, dados) : null,
     });
   }
@@ -116,6 +117,7 @@ export function calcularMatrizes(ossos, animacao, posicao = [0, 0, 0], escala = 
     local = m4.rotateZ(local, giro[2] * RAD);
     local = m4.rotateY(local, giro[1] * RAD);
     local = m4.rotateX(local, giro[0] * RAD);
+    local = m4.scale(local, movimento.scale || [1, 1, 1]);
     const mundo = m4.multiply(pai ? resolver(pai) : mundoRaiz, local);
     matrizes.set(osso.nome, mundo);
     visitando.delete(osso.nome);
@@ -124,6 +126,25 @@ export function calcularMatrizes(ossos, animacao, posicao = [0, 0, 0], escala = 
 
   for (const osso of ossos.values()) resolver(osso);
   return matrizes;
+}
+
+export function alturaDeApoio(ossos, animacao, x, z, angulo, alturaTerreno, ignorarCauda = false) {
+  const matrizes = calcularMatrizes(ossos, animacao, [x, 0, z], 0.18, angulo);
+  let altura = -Infinity;
+  for (const osso of ossos.values()) {
+    if (ignorarCauda && osso.nome.startsWith('tail')) continue;
+    for (let i = 0; i < osso.vertices.length; i += 3) {
+      const ponto = m4.transformPoint(matrizes.get(osso.nome), osso.vertices.subarray(i, i + 3));
+      const chao = alturaTerreno(ponto[0], ponto[2]);
+      if (chao > 0) altura = Math.max(altura, chao - ponto[1]);
+    }
+  }
+  return Number.isFinite(altura) ? altura : alturaTerreno(x, z);
+}
+
+export function pontaDaCauda(ossos, animacao, posicao, angulo) {
+  const matrizes = calcularMatrizes(ossos, animacao, posicao, 0.18, angulo);
+  return m4.transformPoint(matrizes.get('tail4'), [0, 0, 5]);
 }
 
 export function desenharModelo(gl, programInfo, ossos, textura, animacao, viewProjection, posicao, escala, anguloY) {

@@ -41,8 +41,36 @@ temporizadores e animação do Slowpoke, mantendo câmera e iluminação.
 Verificações: cinco minutos de passeio simulado no cenário atual; validade das
 rotas e conexões; limite de velocidade e giro; pausa e reinício; ciclo de
 animação e transições sem cruzar o chão; corpo dentro da folga de navegação.
-Conferência visual da caminhada pendente. Poses com `P` e evolução ainda pendentes.
+Conferência visual da caminhada pendente. Evolução ainda pendente.
 
 Viradas revisadas: percursos curvos validados antes de caminhar, avanço na direção
 do corpo e aceleração angular gradual. Testadas meias-voltas pelos dois lados e
 três passeios simulados de cinco minutos, sem rotações paradas ou saída da área segura.
+
+## Quatro poses do Slowpoke
+
+`P` percorre centro, dormindo deitado perto do mar, deitado acordado próximo ao guarda-sol
+e deitado na margem com a cauda na água. Os destinos têm posições e orientações
+distintas. No modo caminhar, a chegada usa curvas e uma aproximação alinhada; a
+postura muda após o deslocamento. O seletor em Comandos também permite
+teletransportar diretamente para posição, orientação e postura finais.
+Poses permanecem ativas até `P`, `M` ou `R`.
+
+O grafo de aproximação permite chegar mais perto da margem, mantendo as patas em
+terra. A altura de apoio é calculada pelos vértices transformados do personagem.
+Na quarta pose a cauda desce depois da areia, e a ponta é obtida da matriz do osso
+`tail4`, ficando disponível para a futura sequência de Shellder.
+
+Verificado em simulação: ciclo completo e retorno à primeira pose, troca de
+destino com `P` repetido, saída por `M`, reinício em diferentes fases, continuidade
+de posição e orientação, apoio sobre areia e ponta da cauda dentro da água.
+A aparência das posturas ainda precisa ser conferida no navegador. A evolução
+não está implementada nesta etapa.
+
+Revisão das posturas: a antiga pose sentada foi substituída por barriga baixa e
+patas recolhidas. A pose de sono fecha as pálpebras usando os ossos do clipe blink;
+a terceira pose fica de barriga para baixo, com olhos e boca abertos.
+A pose da margem foi aproximada da água, com o centro da ponta da
+cauda cerca de 0,42 unidade abaixo da superfície e parte da geometria final
+submersa. Conferidos os dois modos, troca de modo em movimento, interrupção da
+aproximação por `P`, retorno por `M`, reinício e transições sem atravessar a areia.

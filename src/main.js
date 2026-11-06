@@ -37,9 +37,16 @@ async function iniciar() {
   const passeio = criarPasseioSlowpoke(navegacao, slowpokePosition);
   const whiteTexture = twgl.createTexture(gl, { src: [255, 255, 255, 255] });
   let slowpoke = null;
-  carregarSlowpoke(gl).then(modelo => { slowpoke = modelo; }).catch(mostrarErro);
+  carregarSlowpoke(gl).then(modelo => {
+    passeio.definirModelo(modelo.ossos);
+    slowpoke = modelo;
+  }).catch(mostrarErro);
   const { m4 } = twgl;
   const cameras = criarCameras(canvas);
+  document.querySelector('#modo-poses').addEventListener('change', evento => {
+    passeio.definirModoPose(evento.target.value);
+    canvas.focus({ preventScroll: true });
+  });
   let iluminacaoAtiva = true;
 
   window.addEventListener('keydown', evento => {
@@ -49,6 +56,7 @@ async function iniciar() {
     const tecla = evento.key.toLowerCase();
     if (tecla === 'l') iluminacaoAtiva = !iluminacaoAtiva;
     if (tecla === 'm') passeio.alternarPasseio();
+    if (tecla === 'p' && slowpoke) passeio.proximaPose();
     if (tecla === 'r') passeio.reiniciar();
   });
 

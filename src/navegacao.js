@@ -6,14 +6,14 @@ export function criarNavegacao(alturaTerreno, objetos, raioTerra = 3.25) {
   const passo = 1.2;
   const limite = MEIA_BASE - 0.18;
   // O corpo e a cauda precisam caber mesmo durante uma curva.
-  const margens = { terra: raioTerra, agua: 0.8 };
+  const margens = { terra: raioTerra, agua: 0.8, aproximacao: 1.55 };
 
   function pontoValido(ponto, area = 'terra') {
     const margem = margens[area];
     if (margem === undefined) throw new Error(`Área de navegação desconhecida: ${area}`);
     if (Math.abs(ponto.x) + margem >= limite || Math.abs(ponto.z) + margem >= limite) return false;
     const altura = alturaTerreno(ponto.x, ponto.z);
-    if (area === 'terra') {
+    if (area !== 'agua') {
       if (altura <= 0) return false;
       for (const objeto of objetos) {
         if (Math.hypot(ponto.x - objeto.posicao[0], ponto.z - objeto.posicao[2])
@@ -28,7 +28,9 @@ export function criarNavegacao(alturaTerreno, objetos, raioTerra = 3.25) {
           ponto.z + Math.sin(angulo) * margem * fator);
         // Nesta etapa o passeio usa patamares planos: não atravessa os degraus
         // com as patas flutuando ou enterradas. A margem fica para as futuras poses.
-        if (area === 'terra' ? Math.abs(amostra - altura) > 0.01 : amostra > 0) return false;
+        if (area === 'terra' && Math.abs(amostra - altura) > 0.01) return false;
+        if (area === 'aproximacao' && amostra <= 0) return false;
+        if (area === 'agua' && amostra > 0) return false;
       }
     }
     return true;
@@ -85,7 +87,8 @@ export function criarNavegacao(alturaTerreno, objetos, raioTerra = 3.25) {
     return { area, nos };
   }
 
-  const grafos = { terra: criarGrafo('terra'), agua: criarGrafo('agua') };
+  const grafos = { terra: criarGrafo('terra'), agua: criarGrafo('agua'),
+    aproximacao: criarGrafo('aproximacao') };
 
   function conexoes(ponto, area) {
     return grafos[area].nos.slice().sort((a, b) => distancia(ponto, a) - distancia(ponto, b))
