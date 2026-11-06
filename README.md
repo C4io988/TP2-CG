@@ -4,6 +4,7 @@ Trabalho de Computação Gráfica em JavaScript, WebGL e TWGL.js.
 Shaders GLSL em `src/shaders/`, separados em vertex e fragment shader.
 
 Por enquanto: ilha e relevo em blocos, mar e Slowpoke passeando sobre uma base quadrada.
+Água pixelada com transparência, fundo em degraus, ondas suaves e textura animada.
 Coqueiros, vegetação, pedras, cocos, conchas, guarda-sol, catavento giratório e base de fogueira.
 Abra `index.html` pelo Live Server. `1`: câmera automática; `2`: câmera manual
 (arraste para girar). Use o scroll para zoom nas duas e `L` para alternar a iluminação Blinn-Phong.

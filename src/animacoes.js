@@ -13,7 +13,8 @@ export function idleSlowpoke(tempo) {
     },
     head: { rotation: [-sin(fase - 30) * 2, -cos(fase / 2 - 60), 0] },
     ear_left: { rotation: [-sin(fase - 60) * 4, 0, 0] },
-    jaw: { rotation: [25 - sin(fase - 60) * 2, 0, 0] },
+    // O eixo X da mandíbula é invertido em relação ao clipe Bedrock.
+    jaw: { rotation: [-32.5 + sin(fase - 60) * 2, 0, 0] },
     // Neste sistema de eixos, X negativo curva a cauda para cima.
     tail: { rotation: [-20 + sin(fase - 30) * 3, -cos(fase / 2 - 30) * 2, 0] },
     tail2: { rotation: [-45 + sin(fase - 90) * 3, -cos(fase / 2 - 90) * 2, 0] },

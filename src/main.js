@@ -7,6 +7,7 @@ import { posicaoNaPraia } from './praia.js';
 import { criarCenario } from './cenario.js';
 import { criarNavegacao } from './navegacao.js';
 import { criarPasseioSlowpoke } from './personagens.js';
+import { criarAgua } from './agua.js';
 
 const canvas = document.querySelector('#cena');
 const errorMessage = document.querySelector('#erro');
@@ -23,10 +24,12 @@ async function iniciar() {
   const gl = canvas.getContext('webgl', { antialias: true });
   if (!gl) throw new Error('WebGL não está disponível neste navegador.');
 
-  const { vertexShader, fragmentShader } = await carregarShaders();
+  const [shadersBasicos, shadersAgua] = await Promise.all([carregarShaders(), carregarShaders('agua')]);
+  const { vertexShader, fragmentShader } = shadersBasicos;
   const program = twgl.createProgramInfo(gl, [vertexShader, fragmentShader]);
   if (!program) throw new Error('Falha ao preparar os shaders.');
-  const { partes: parts, alturaTerreno } = criarBase(gl);
+  const { partes: parts, agua: superficieAgua, alturaTerreno } = criarBase(gl);
+  const agua = criarAgua(gl, superficieAgua, shadersAgua);
   const cenario = criarCenario(gl, alturaTerreno);
   parts.push(...cenario.partes);
   // Um pouco mais para o interior, com as quatro patas sobre o patamar de areia.
@@ -81,13 +84,14 @@ async function iniciar() {
     const { eye, viewProjection } = cameras.matrizes(canvas.width / Math.max(canvas.height, 1));
 
     gl.useProgram(program.program);
-    twgl.setUniforms(program, {
+    const iluminacao = {
       u_cameraPosition: eye,
       u_lightDirection: [-0.5, 1, 0.8],
       u_lightColor: [1, 0.97, 0.90],
       u_ambientColor: [0.90, 0.95, 1],
       u_lightOn: iluminacaoAtiva,
-    });
+    };
+    twgl.setUniforms(program, iluminacao);
     gl.enable(gl.CULL_FACE);
     for (const part of parts) {
       twgl.setBuffersAndAttributes(gl, program, part.buffer);
@@ -110,6 +114,7 @@ async function iniciar() {
         passeio.animacao(), viewProjection,
         passeio.posicao, 0.18, passeio.angulo);
     }
+    agua.desenhar(viewProjection, iluminacao, animationTime);
     requestAnimationFrame(render);
   }
 

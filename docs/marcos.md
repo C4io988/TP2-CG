@@ -74,3 +74,22 @@ A pose da margem foi aproximada da água, com o centro da ponta da
 cauda cerca de 0,42 unidade abaixo da superfície e parte da geometria final
 submersa. Conferidos os dois modos, troca de modo em movimento, interrupção da
 aproximação por `P`, retorno por `M`, reinício e transições sem atravessar a areia.
+
+## Água com profundidade
+
+Fundo de areia submerso em degraus, com profundidade de 0,60 a 1,68 unidade.
+A parte superior da caixa é oca e a borda preta é uma moldura, para o fundo ficar
+visível. A geometria da ilha e a função de altura usada na navegação permanecem.
+
+Shaders `agua.vert.glsl` e `agua.frag.glsl`: ondas de baixa amplitude, normais
+correspondentes, duas camadas de textura pixelada em movimento, cor e opacidade
+conforme a profundidade e brilho Blinn-Phong. A água é desenhada após cenário e
+personagem, com blending e escrita de profundidade desativada apenas nessa passagem.
+`L` também alterna a iluminação da água.
+
+Verificados cobertura do fundo, índices/normais, continuidade das ondas nos
+vértices compartilhados, espaço livre na caixa, uniforms e restauração do estado
+de transparência. Poses, caminhos e reinício conferidos em simulação. A mandíbula
+dos clipes Cobblemon teve o eixo X adaptado para abrir a boca nas poses acordadas;
+a pose de sono permanece com a boca fechada. Aparência final pendente de revisão
+no navegador.

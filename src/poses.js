@@ -19,7 +19,7 @@ export function animacaoDaPose(indice, tempo, inclinacaoCauda = 25) {
   const a = idleSlowpoke(tempo);
   const respiracao = Math.sin(tempo * 1.5);
   if (indice === 0) return a;
-  a.jaw = { rotation: [4, 0, 0] };
+  a.jaw = { rotation: [-32.5 + respiracao * 1.5, 0, 0] };
 
   // Adaptação da postura floor_idle do modelo, com patas abertas e barriga baixa.
   a.body = { position: [0, -1.5, 0] };
@@ -46,7 +46,7 @@ export function animacaoDaPose(indice, tempo, inclinacaoCauda = 25) {
   if (indice === 2) {
     // Barriga apoiada, olhos na posição normal e mandíbula aberta.
     a.head = { rotation: [-2.5, 0, 0] };
-    a.jaw = { rotation: [28 + respiracao * 1.5, 0, 0] };
+    a.jaw = { rotation: [-32.5 + respiracao * 1.5, 0, 0] };
   } else if (indice === 3) {
     // A descida se concentra no fim da cauda, depois de ultrapassar a areia.
     a.tail = { rotation: [inclinacaoCauda * 0.5, 0, 0] };

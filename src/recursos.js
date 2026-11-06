@@ -1,7 +1,7 @@
 import * as twgl from '../vendor/twgl-full.module.js';
 import { criarModelo } from './cobblemon.js';
 
-export async function carregarShaders() {
+export async function carregarShaders(nome = 'basico') {
   async function carregarTexto(arquivo) {
     const url = new URL(`./shaders/${arquivo}`, import.meta.url);
     const resposta = await fetch(url);
@@ -10,8 +10,8 @@ export async function carregarShaders() {
   }
 
   const [vertexShader, fragmentShader] = await Promise.all([
-    carregarTexto('basico.vert.glsl'),
-    carregarTexto('basico.frag.glsl'),
+    carregarTexto(`${nome}.vert.glsl`),
+    carregarTexto(`${nome}.frag.glsl`),
   ]);
   return { vertexShader, fragmentShader };
 }

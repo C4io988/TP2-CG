@@ -29,7 +29,7 @@ export function criarTexturasPraia(gl) {
   });
   const tonsAgua = [[43, 111, 184], [48, 122, 195], [54, 133, 204], [67, 147, 212]];
   const agua = textura(32, (x, y) => {
-    // Pequenos traços em degraus sugerem ondulações sem animar a água nesta etapa.
+    // Traços em degraus; o shader move duas camadas sem perder o aspecto pixelado.
     const faixa = (y + Math.floor(2 * Math.sin(x * Math.PI / 8)) + 32) % 8;
     if (faixa === 0 && ruido(Math.floor(x / 4), Math.floor(y / 8), 23) > 0.35) return tonsAgua[3];
     const valor = ruido(x, y, 22);

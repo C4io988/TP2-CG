@@ -53,8 +53,44 @@ export function criarGeometriaPraia(meiaLargura, divisoes = 64) {
       Math.floor((z + meiaLargura) / tamanhoBloco));
   }
 
+  // Distância em células até a areia: o fundo aprofunda em pequenos degraus.
+  const distancias = new Int16Array(divisoes * divisoes).fill(-1);
+  const fila = [];
+  for (let linha = 0; linha < divisoes; linha++) {
+    for (let coluna = 0; coluna < divisoes; coluna++) {
+      if (alturaCelula(coluna, linha) > 0) {
+        const indice = linha * divisoes + coluna;
+        distancias[indice] = 0;
+        fila.push(indice);
+      }
+    }
+  }
+  for (let i = 0; i < fila.length; i++) {
+    const atual = fila[i], coluna = atual % divisoes, linha = Math.floor(atual / divisoes);
+    for (const [dc, dl] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+      const c = coluna + dc, l = linha + dl;
+      if (c < 0 || c >= divisoes || l < 0 || l >= divisoes) continue;
+      const vizinho = l * divisoes + c;
+      if (distancias[vizinho] !== -1) continue;
+      distancias[vizinho] = distancias[atual] + 1;
+      fila.push(vizinho);
+    }
+  }
+  function profundidadeCelula(coluna, linha) {
+    const c = Math.max(0, Math.min(divisoes - 1, coluna));
+    const l = Math.max(0, Math.min(divisoes - 1, linha));
+    return 0.60 + Math.min(6, Math.max(0, distancias[l * divisoes + c] - 1)) * 0.18;
+  }
+  function profundidadeVertice(x, z) {
+    const c = Math.round((x + meiaLargura) / tamanhoBloco);
+    const l = Math.round((z + meiaLargura) / tamanhoBloco);
+    return (profundidadeCelula(c - 1, l - 1) + profundidadeCelula(c, l - 1)
+      + profundidadeCelula(c - 1, l) + profundidadeCelula(c, l)) / 4;
+  }
+
   const malha = () => ({ position: [], normal: [], texcoord: [], indices: [] });
-  const areia = malha(), agua = malha(), lateral = malha();
+  const areia = malha(), agua = malha(), lateral = malha(), fundo = malha();
+  agua.depth = { numComponents: 1, data: [] };
   function adicionarFace(dados, pontos, normal, tamanhoTextura) {
     const inicio = dados.position.length / 3;
     for (const [x, y, z] of pontos) {
@@ -62,6 +98,7 @@ export function criarGeometriaPraia(meiaLargura, divisoes = 64) {
       dados.normal.push(...normal);
       dados.texcoord.push((normal[1] ? x : x + z) / tamanhoTextura,
         (normal[1] ? z : -y) / tamanhoTextura);
+      if (dados === agua) agua.depth.data.push(profundidadeVertice(x, z));
     }
     dados.indices.push(inicio, inicio + 1, inicio + 2, inicio, inicio + 2, inicio + 3);
   }
@@ -73,21 +110,40 @@ export function criarGeometriaPraia(meiaLargura, divisoes = 64) {
       const y = alturaCelula(coluna, linha);
       adicionarFace(y > 0 ? areia : agua,
         [[x0, y, z0], [x0, y, z1], [x1, y, z1], [x1, y, z0]], [0, 1, 0], y > 0 ? 2 : 4);
-      if (y === 0) continue;
+      if (y === 0) {
+        const chao = -profundidadeCelula(coluna, linha);
+        adicionarFace(fundo, [[x0, chao, z0], [x0, chao, z1],
+          [x1, chao, z1], [x1, chao, z0]], [0, 1, 0], 2);
+        const vizinhos = [
+          { c: coluna - 1, l: linha, normal: [-1, 0, 0], a: [x0, z0], b: [x0, z1] },
+          { c: coluna + 1, l: linha, normal: [1, 0, 0], a: [x1, z1], b: [x1, z0] },
+          { c: coluna, l: linha - 1, normal: [0, 0, -1], a: [x1, z0], b: [x0, z0] },
+          { c: coluna, l: linha + 1, normal: [0, 0, 1], a: [x0, z1], b: [x1, z1] },
+        ];
+        for (const v of vizinhos) {
+          if (v.c < 0 || v.c >= divisoes || v.l < 0 || v.l >= divisoes || alturaCelula(v.c, v.l) > 0) continue;
+          const baixo = -profundidadeCelula(v.c, v.l);
+          if (baixo >= chao) continue;
+          adicionarFace(fundo, [[v.a[0], baixo, v.a[1]], [v.b[0], baixo, v.b[1]],
+            [v.b[0], chao, v.b[1]], [v.a[0], chao, v.a[1]]], v.normal, 2);
+        }
+        continue;
+      }
       // Fecha somente os lados expostos, formando os degraus e a borda da areia.
       const lados = [
-        { altura: alturaCelula(coluna - 1, linha), normal: [-1, 0, 0], a: [x0, z0], b: [x0, z1] },
-        { altura: alturaCelula(coluna + 1, linha), normal: [1, 0, 0], a: [x1, z1], b: [x1, z0] },
-        { altura: alturaCelula(coluna, linha - 1), normal: [0, 0, -1], a: [x1, z0], b: [x0, z0] },
-        { altura: alturaCelula(coluna, linha + 1), normal: [0, 0, 1], a: [x0, z1], b: [x1, z1] },
+        { c: coluna - 1, l: linha, altura: alturaCelula(coluna - 1, linha), normal: [-1, 0, 0], a: [x0, z0], b: [x0, z1] },
+        { c: coluna + 1, l: linha, altura: alturaCelula(coluna + 1, linha), normal: [1, 0, 0], a: [x1, z1], b: [x1, z0] },
+        { c: coluna, l: linha - 1, altura: alturaCelula(coluna, linha - 1), normal: [0, 0, -1], a: [x1, z0], b: [x0, z0] },
+        { c: coluna, l: linha + 1, altura: alturaCelula(coluna, linha + 1), normal: [0, 0, 1], a: [x0, z1], b: [x1, z1] },
       ];
       for (const lado of lados) {
         if (lado.altura >= y) continue;
+        const baixo = lado.altura > 0 ? lado.altura : -profundidadeCelula(lado.c, lado.l);
         const [ax, az] = lado.a, [bx, bz] = lado.b;
-        adicionarFace(lateral, [[ax, lado.altura, az], [bx, lado.altura, bz],
+        adicionarFace(lateral, [[ax, baixo, az], [bx, baixo, bz],
           [bx, y, bz], [ax, y, az]], lado.normal, 2);
       }
     }
   }
-  return { areia, agua, lateral, alturaTerreno };
+  return { areia, agua, lateral, fundo, alturaTerreno };
 }
