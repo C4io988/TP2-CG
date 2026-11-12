@@ -147,7 +147,7 @@ export function pontaDaCauda(ossos, animacao, posicao, angulo) {
   return m4.transformPoint(matrizes.get('tail4'), [0, 0, 5]);
 }
 
-export function desenharModelo(gl, programInfo, ossos, textura, animacao, viewProjection, posicao, escala, anguloY) {
+export function desenharModelo(gl, programInfo, ossos, textura, animacao, viewProjection, posicao, escala, anguloY, material = MATERIAIS.slowpoke) {
   const matrizes = calcularMatrizes(ossos, animacao, posicao, escala, anguloY);
   for (const osso of ossos.values()) {
     if (!osso.buffer) continue;
@@ -155,7 +155,7 @@ export function desenharModelo(gl, programInfo, ossos, textura, animacao, viewPr
 
     twgl.setBuffersAndAttributes(gl, programInfo, osso.buffer);
     twgl.setUniforms(programInfo, {
-      ...MATERIAIS.slowpoke,
+      ...material,
       u_world: mundo,
       u_worldViewProjection: m4.multiply(viewProjection, mundo),
       u_worldInverseTranspose: m4.transpose(m4.inverse(mundo)),

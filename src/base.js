@@ -44,5 +44,6 @@ export function criarBase(gl) {
   }
   const superficieAgua = { ...part(agua, [1, 1, 1], [0, ALTURA_SUPERFICIE, 0]),
     texture: texturas.agua, material: MATERIAIS.agua };
-  return { partes, agua: superficieAgua, alturaTerreno: praia.alturaTerreno };
+  return { partes, agua: superficieAgua, alturaTerreno: praia.alturaTerreno,
+    profundidadeAgua: praia.profundidadeAgua };
 }

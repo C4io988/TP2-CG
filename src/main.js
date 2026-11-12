@@ -1,13 +1,15 @@
 import * as twgl from '../vendor/twgl-full.module.js';
 import { criarBase, ALTURA_SUPERFICIE } from './base.js';
 import { criarCameras } from './cameras.js';
-import { carregarSlowpoke, carregarShaders } from './recursos.js';
+import { carregarSlowpoke, carregarShellder, carregarShaders } from './recursos.js';
 import { desenharModelo } from './cobblemon.js';
 import { posicaoNaPraia } from './praia.js';
 import { criarCenario } from './cenario.js';
 import { criarNavegacao } from './navegacao.js';
 import { criarPasseioSlowpoke } from './personagens.js';
 import { criarAgua } from './agua.js';
+import { criarPasseioShellder, ESCALA_SHELLDER } from './shellder.js';
+import { MATERIAIS } from './materiais.js';
 
 const canvas = document.querySelector('#cena');
 const errorMessage = document.querySelector('#erro');
@@ -24,11 +26,14 @@ async function iniciar() {
   const gl = canvas.getContext('webgl', { antialias: true });
   if (!gl) throw new Error('WebGL não está disponível neste navegador.');
 
+  // Inicia os downloads antes de preparar os shaders, a ilha e a navegação.
+  const slowpokePronto = carregarSlowpoke(gl).catch(mostrarErro);
+  const shellderPronto = carregarShellder(gl).catch(mostrarErro);
   const [shadersBasicos, shadersAgua] = await Promise.all([carregarShaders(), carregarShaders('agua')]);
   const { vertexShader, fragmentShader } = shadersBasicos;
   const program = twgl.createProgramInfo(gl, [vertexShader, fragmentShader]);
   if (!program) throw new Error('Falha ao preparar os shaders.');
-  const { partes: parts, agua: superficieAgua, alturaTerreno } = criarBase(gl);
+  const { partes: parts, agua: superficieAgua, alturaTerreno, profundidadeAgua } = criarBase(gl);
   const agua = criarAgua(gl, superficieAgua, shadersAgua);
   const cenario = criarCenario(gl, alturaTerreno);
   parts.push(...cenario.partes);
@@ -38,11 +43,19 @@ async function iniciar() {
     ALTURA_SUPERFICIE + alturaTerreno(slowpokeX, slowpokeZ) + 0.01, slowpokeZ];
   const navegacao = criarNavegacao(alturaTerreno, cenario.objetos);
   const passeio = criarPasseioSlowpoke(navegacao, slowpokePosition);
+  const nado = criarPasseioShellder(navegacao, Math.random, profundidadeAgua);
   const whiteTexture = twgl.createTexture(gl, { src: [255, 255, 255, 255] });
   let slowpoke = null;
-  carregarSlowpoke(gl).then(modelo => {
+  let shellder = null;
+  slowpokePronto.then(modelo => {
+    if (!modelo) return;
     passeio.definirModelo(modelo.ossos);
     slowpoke = modelo;
+  }).catch(mostrarErro);
+  shellderPronto.then(modelo => {
+    if (!modelo) return;
+    nado.definirModelo(modelo.ossos);
+    shellder = modelo;
   }).catch(mostrarErro);
   const { m4 } = twgl;
   const cameras = criarCameras(canvas);
@@ -58,9 +71,15 @@ async function iniciar() {
       || ['INPUT', 'SELECT', 'TEXTAREA'].includes(foco?.tagName) || foco?.isContentEditable) return;
     const tecla = evento.key.toLowerCase();
     if (tecla === 'l') iluminacaoAtiva = !iluminacaoAtiva;
-    if (tecla === 'm') passeio.alternarPasseio();
+    if (tecla === 'm') {
+      passeio.alternarPasseio();
+      nado.definirAtivo(passeio.ativo);
+    }
     if (tecla === 'p' && slowpoke) passeio.proximaPose();
-    if (tecla === 'r') passeio.reiniciar();
+    if (tecla === 'r') {
+      passeio.reiniciar();
+      nado.reiniciar();
+    }
   });
 
   gl.enable(gl.DEPTH_TEST);
@@ -76,6 +95,7 @@ async function iniciar() {
     cenario.atualizar(animationTime);
     cameras.atualizar(delta);
     if (slowpoke) passeio.atualizar(delta);
+    if (shellder) nado.atualizar(delta);
     twgl.resizeCanvasToDisplaySize(canvas, Math.min(window.devicePixelRatio || 1, 2));
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.clearColor(0.894, 0.929, 0.945, 1);
@@ -113,6 +133,11 @@ async function iniciar() {
       desenharModelo(gl, program, slowpoke.ossos, slowpoke.textura,
         passeio.animacao(), viewProjection,
         passeio.posicao, 0.18, passeio.angulo);
+    }
+    if (shellder) {
+      gl.disable(gl.CULL_FACE);
+      desenharModelo(gl, program, shellder.ossos, shellder.textura,
+        nado.animacao(), viewProjection, nado.posicao, ESCALA_SHELLDER, nado.angulo, MATERIAIS.shellder);
     }
     agua.desenhar(viewProjection, iluminacao, animationTime);
     requestAnimationFrame(render);

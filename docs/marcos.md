@@ -93,3 +93,28 @@ de transparência. Poses, caminhos e reinício conferidos em simulação. A mand
 dos clipes Cobblemon teve o eixo X adaptado para abrir a boca nas poses acordadas;
 a pose de sono permanece com a boca fechada. Aparência final pendente de revisão
 no navegador.
+
+## Shellder na água
+
+Modelo e textura do Cobblemon, com repouso, nado, movimento da língua e da concha.
+Percursos curvos na maior região aquática disponível e flutuação acompanhando as
+ondas. A margem de navegação considera o tamanho da geometria animada; a altura
+mantém a parte inferior submersa, acima do fundo. Desenhado antes da água transparente.
+`M` pausa/retoma os dois personagens e `R` reinicia ambos. As poses continuam
+exclusivas do Slowpoke; a interação com a cauda e a evolução ficam para outra etapa.
+
+Verificado em três simulações de três minutos, com sementes diferentes: mais de
+82 unidades percorridas em cada uma, vértices fora da areia e da borda, sem contato
+com o fundo. Conferidos pausa, reinício e matrizes finitas. Aparência final ainda
+depende de conferência no navegador.
+
+Revisão: Shellder mais submerso, com imersão de até 0,95 unidade e limite
+conservador conforme o fundo sob a geometria. A profundidade é interpolada para
+evitar saltos ao passar pelos degraus. Três novas simulações de três minutos
+confirmaram ausência de contato com areia e fundo, pausa e reinício funcionando.
+
+Carregamento: imagens antecipadas no HTML e downloads dos dois Pokémon iniciados
+junto aos shaders, antes da preparação do cenário e da navegação. A calibração
+da concha mede apenas vértices únicos e calcula diretamente a coordenada Y,
+preservando o resultado anterior. O cálculo ficou mais rápido na medição local;
+o tempo total de abertura ainda precisa ser medido no navegador.

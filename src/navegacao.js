@@ -6,7 +6,7 @@ export function criarNavegacao(alturaTerreno, objetos, raioTerra = 3.25) {
   const passo = 1.2;
   const limite = MEIA_BASE - 0.18;
   // O corpo e a cauda precisam caber mesmo durante uma curva.
-  const margens = { terra: raioTerra, agua: 0.8, aproximacao: 1.55 };
+  const margens = { terra: raioTerra, agua: 1.75, aproximacao: 1.55 };
 
   function pontoValido(ponto, area = 'terra') {
     const margem = margens[area];

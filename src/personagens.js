@@ -10,6 +10,8 @@ const diferencaAngular = (a, b) => Math.atan2(Math.sin(a - b), Math.cos(a - b));
 
 export function criarPercursoSuave(navegacao, origem, anguloInicial, rota, ladoInicial = 1, opcoes = {}) {
   const area = opcoes.area || 'terra';
+  const velocidadeMaxima = opcoes.velocidade || VELOCIDADE;
+  const giroMaximo = opcoes.giroMaximo || GIRO_MAXIMO;
   // Remove pontos intermediários que podem ser ligados por um trecho livre.
   const pontos = [origem, ...rota];
   const alvos = [];
@@ -40,11 +42,11 @@ export function criarPercursoSuave(navegacao, origem, anguloInicial, rota, ladoI
     // Para uma meia-volta, mantém o lado escolhido até sair da direção oposta.
     if (iniciandoVirada && Math.abs(erro) > Math.PI / 2) erro = Math.abs(erro) * ladoInicial;
     else iniciandoVirada = false;
-    const giroDesejado = limitar(erro * 2.8, -GIRO_MAXIMO, GIRO_MAXIMO);
+    const giroDesejado = limitar(erro * 2.8, -giroMaximo, giroMaximo);
     giro += limitar(giroDesejado - giro, -2.5 * passoTempo, 2.5 * passoTempo);
     const novoAngulo = angulo + giro * passoTempo;
     // Ele desacelera um pouco na curva, mas continua dando passos para a frente.
-    let velocidade = VELOCIDADE * (1 - 0.35 * Math.min(Math.abs(erro) / Math.PI, 1));
+    let velocidade = velocidadeMaxima * (1 - 0.35 * Math.min(Math.abs(erro) / Math.PI, 1));
     if (alvo === alvos.length - 1) velocidade *= Math.min(1, distancia / 0.6);
     const direcao = (angulo + novoAngulo) / 2;
     const novo = { x: x - Math.sin(direcao) * velocidade * passoTempo,

@@ -17,13 +17,31 @@ export async function carregarShaders(nome = 'basico') {
 }
 
 export async function carregarSlowpoke(gl) {
+  return carregarPokemon(gl, 'slowpoke');
+}
+
+export async function carregarShellder(gl) {
+  return carregarPokemon(gl, 'shellder');
+}
+
+async function carregarPokemon(gl, nome) {
   // Caminhos relativos ao módulo para funcionar também em subdiretórios.
-  const modeloUrl = new URL('../assets/pokemon/models/slowpoke.geo.json', import.meta.url);
-  const texturaUrl = new URL('../assets/pokemon/textures/slowpoke.png', import.meta.url);
+  const modeloUrl = new URL(`../assets/pokemon/models/${nome}.geo.json`, import.meta.url);
+  const texturaUrl = new URL(`../assets/pokemon/textures/${nome}.png`, import.meta.url);
   const [geometria, imagem] = await Promise.all([
     carregarJson(modeloUrl),
     carregarImagem(texturaUrl),
   ]);
+
+  if (nome === 'shellder') {
+    // No nosso sistema de eixos, inverte X para as metades da concha abrirem.
+    for (const fonte of geometria['minecraft:geometry']) {
+      for (const osso of fonte.bones) {
+        if (osso.rotation) osso.rotation[0] *= -1;
+        for (const cubo of osso.cubes || []) if (cubo.rotation) cubo.rotation[0] *= -1;
+      }
+    }
+  }
 
   const textura = twgl.createTexture(gl, {
     src: imagem,
@@ -39,7 +57,7 @@ export async function carregarSlowpoke(gl) {
 
 async function carregarJson(url) {
   const resposta = await fetch(url);
-  if (!resposta.ok) throw new Error(`Modelo Slowpoke: HTTP ${resposta.status}`);
+  if (!resposta.ok) throw new Error(`Modelo ${url.pathname.split('/').at(-1)}: HTTP ${resposta.status}`);
   return resposta.json();
 }
 
@@ -49,7 +67,7 @@ async function carregarImagem(url) {
   try {
     await imagem.decode();
   } catch {
-    throw new Error('Não foi possível carregar a textura do Slowpoke.');
+    throw new Error(`Não foi possível carregar a textura ${url.pathname.split('/').at(-1)}.`);
   }
   return imagem;
 }

@@ -88,6 +88,34 @@ export function criarGeometriaPraia(meiaLargura, divisoes = 64) {
       + profundidadeCelula(c - 1, l) + profundidadeCelula(c, l)) / 4;
   }
 
+  function menorProfundidade(x, z, raio) {
+    const coluna = valor => Math.floor((valor + meiaLargura) / tamanhoBloco);
+    let profundidade = Infinity;
+    for (let l = coluna(z - raio); l <= coluna(z + raio); l++) {
+      for (let c = coluna(x - raio); c <= coluna(x + raio); c++) {
+        profundidade = Math.min(profundidade, profundidadeCelula(c, l));
+      }
+    }
+    return profundidade;
+  }
+
+  function profundidadeAgua(x, z, raio = 0) {
+    if (raio === 0) return menorProfundidade(x, z, 0);
+    // Interpola áreas um bloco maiores: a altura varia suavemente, sempre com
+    // uma estimativa conservadora do fundo sob toda a geometria animada.
+    const coluna = Math.floor((x + meiaLargura) / tamanhoBloco);
+    const linha = Math.floor((z + meiaLargura) / tamanhoBloco);
+    const x0 = coluna * tamanhoBloco - meiaLargura;
+    const z0 = linha * tamanhoBloco - meiaLargura;
+    const tx = (x - x0) / tamanhoBloco, tz = (z - z0) / tamanhoBloco;
+    const margem = raio + tamanhoBloco;
+    const a = menorProfundidade(x0, z0, margem);
+    const b = menorProfundidade(x0 + tamanhoBloco, z0, margem);
+    const c = menorProfundidade(x0, z0 + tamanhoBloco, margem);
+    const d = menorProfundidade(x0 + tamanhoBloco, z0 + tamanhoBloco, margem);
+    return (a * (1 - tx) + b * tx) * (1 - tz) + (c * (1 - tx) + d * tx) * tz;
+  }
+
   const malha = () => ({ position: [], normal: [], texcoord: [], indices: [] });
   const areia = malha(), agua = malha(), lateral = malha(), fundo = malha();
   agua.depth = { numComponents: 1, data: [] };
@@ -145,5 +173,5 @@ export function criarGeometriaPraia(meiaLargura, divisoes = 64) {
       }
     }
   }
-  return { areia, agua, lateral, fundo, alturaTerreno };
+  return { areia, agua, lateral, fundo, alturaTerreno, profundidadeAgua };
 }

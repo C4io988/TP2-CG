@@ -7,6 +7,10 @@
   Segundo o `LEIA-ME.txt` do pacote, foram extraídos de
   `Cobblemon-fabric-1.7.3+1.21.1.jar`.
 - Créditos e links das licenças registrados no README; sem cópias separadas.
+- Shellder: `shellder.geo.json`, `shellder.png` e `shellder.animation.json`
+  copiados do mesmo pacote. Os clipes `water_idle` e `water_swim` foram adaptados
+  em JavaScript; a navegação controla o deslocamento e a direção. As rotações X
+  da concha são convertidas ao carregar o modelo, sem alterar o JSON original.
 - `src/cobblemon.js` e `src/animacoes.js`: adaptados do protótipo local
   `Paraiso OG`, fornecido pelo usuário. Foram ajustados os atributos dos shaders,
   a resolução da hierarquia e a integração com a base atual. O repouso é uma
