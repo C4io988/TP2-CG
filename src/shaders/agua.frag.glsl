@@ -13,6 +13,10 @@ uniform vec3 u_lightColor;
 uniform vec3 u_ambientColor;
 uniform vec3 u_material;
 uniform float u_shininess;
+uniform vec3 u_fogoPosicao;
+uniform vec3 u_fogoCor;
+uniform float u_fogoIntensidade;
+uniform float u_fogoAlcance;
 uniform bool u_neblinaAtiva;
 uniform vec3 u_neblinaCor;
 uniform float u_neblinaInicio;
@@ -52,6 +56,13 @@ void main() {
     float brilho = min(u_material.z * specular, 0.12) * atenuacao;
     color = color * (u_material.x * u_ambientColor + u_material.y * diffuse * u_lightColor)
       + brilho * u_lightColor;
+    vec3 paraFogo = u_fogoPosicao - v_worldPosition;
+    float distanciaFogo = length(paraFogo);
+    vec3 direcaoFogo = paraFogo / max(distanciaFogo, 0.001);
+    float atenuacaoFogo = pow(max(0.0, 1.0 - distanciaFogo / u_fogoAlcance), 2.0)
+      / (1.0 + distanciaFogo * distanciaFogo * 0.18);
+    color += color * u_fogoCor * u_fogoIntensidade * atenuacaoFogo
+      * max(dot(normal, direcaoFogo), 0.0);
   }
   if (u_neblinaAtiva) {
     float neblina = smoothstep(u_neblinaInicio, u_neblinaFim,

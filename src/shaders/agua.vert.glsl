@@ -22,8 +22,8 @@ void main() {
   vec2 transversal = vec2(-u_ventoDirecao.y, u_ventoDirecao.x);
   float phaseA = dot(worldPosition.xz, u_ventoDirecao) * 0.85 - u_time * 1.6 - u_ventoDeslocamento * 0.45;
   float phaseB = dot(worldPosition.xz, transversal) * 1.15 + u_time * 1.1 + u_ventoDeslocamento * 0.2;
-  float amplitudeA = 0.050 + u_ventoForca * 0.025;
-  float amplitudeB = 0.018 + u_ventoForca * 0.010;
+  float amplitudeA = 0.095 + u_ventoForca * 0.035;
+  float amplitudeB = 0.035 + u_ventoForca * 0.015;
   worldPosition.y += fade * (sin(phaseA) * amplitudeA + cos(phaseB) * amplitudeB);
 
   vec2 gradiente = fade * (cos(phaseA) * amplitudeA * 0.85 * u_ventoDirecao

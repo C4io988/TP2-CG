@@ -149,7 +149,7 @@ export function pontaDaCauda(ossos, animacao, posicao, angulo, pontoLocal = [0, 
 
 export function desenharModelo(gl, programInfo, ossos, textura, animacao, viewProjection, posicao, escala, anguloY, material = MATERIAIS.slowpoke, brilho = 0) {
   // A deformação do vento é exclusiva da vegetação do cenário.
-  twgl.setUniforms(programInfo, { u_folha: false });
+  twgl.setUniforms(programInfo, { u_folha: false, u_emissao: 0 });
   const matrizes = calcularMatrizes(ossos, animacao, posicao, escala, anguloY);
   for (const osso of ossos.values()) {
     if (!osso.buffer) continue;

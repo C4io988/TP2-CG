@@ -8,7 +8,8 @@ import { ventoNoTempo } from './ambiente.js';
 export function criarCenario(gl, alturaTerreno) {
   const cubo = primitives.createCubeBufferInfo(gl, 1);
   const texturas = criarTexturasCenario(gl);
-  const partes = [], objetos = [], raizes = [], helices = [];
+  const partes = [], objetos = [], raizes = [], helices = [], chamas = [];
+  let centroFogueira = [0, 0, 0];
 
   function no(pai, local = m4.identity()) {
     const filho = { local, world: m4.identity(), filhos: [], parte: null };
@@ -130,6 +131,12 @@ export function criarCenario(gl, alturaTerreno) {
 
   function fogueira(distancia, lado) {
     const raiz = registrar('fogueira', distancia, lado, 1.15);
+    centroFogueira = Array.from(m4.transformPoint(raiz.local, [0, 1.05, 0]));
+    for (let i = 0; i < 24; i++) {
+      const chama = peca(raiz, [0, 0.6, 0], [0.2, 0.3, 0.2], null, 'madeira');
+      chama.parte.emissao = 1;
+      chamas.push({ raiz, chama, indice: i });
+    }
     for (let i = 0; i < 10; i++) {
       const a = i * Math.PI / 5;
       peca(raiz, [Math.cos(a), 0.15, Math.sin(a)], [0.42, 0.30, 0.40], 'pedra', 'pedra',
@@ -170,8 +177,30 @@ export function criarCenario(gl, alturaTerreno) {
 
   return {
     partes, objetos,
+    luzFogueira(tempo) {
+      return {
+        u_fogoPosicao: centroFogueira,
+        u_fogoCor: [1, 0.34, 0.065],
+        u_fogoIntensidade: 2.2 + Math.sin(tempo * 7.1) * 0.18 + Math.sin(tempo * 11.7) * 0.1,
+        u_fogoAlcance: 6,
+      };
+    },
     atualizar(tempo) {
       const vento = ventoNoTempo(tempo);
+      for (const { raiz, chama, indice: i } of chamas) {
+        const fase = (tempo * (0.65 + (i % 4) * 0.07) + i / 24) % 1;
+        const angulo = i * 2.39996;
+        const raio = (0.12 + (i % 5) * 0.085) * (1 - fase * 0.65);
+        const tamanho = (0.24 + (i % 3) * 0.055) * (1 - fase)
+          * Math.min(1, fase / 0.08);
+        const posicao = [Math.cos(angulo) * raio + vento.direcao[0] * fase * fase * 0.35,
+          0.48 + fase * 1.35, Math.sin(angulo) * raio + vento.direcao[1] * fase * fase * 0.35];
+        // Evita matrizes singulares no nascimento e no desaparecimento dos cubos.
+        const escala = Math.max(0.001, tamanho);
+        chama.local = m4.scale(m4.translation(posicao), [escala, escala * 1.6, escala]);
+        chama.parte.color = [1, 0.8 - fase * 0.65, 0.12 * (1 - fase)];
+        atualizarNo(chama, raiz.world);
+      }
       for (const { raiz, helice } of helices) {
         helice.local = m4.rotateZ(m4.translation([0, 3.65, 0.32]), tempo * 0.5 + vento.deslocamento * 1.2);
         atualizarNo(helice, raiz.world);

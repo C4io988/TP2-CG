@@ -8,7 +8,7 @@ Um diorama de praia inspirado no estilo em blocos do Minecraft, com Slowpoke pas
 
 Slowpoke possui quatro poses: em pé, dormindo deitado, deitado acordado e deitado na margem com a cauda na água. Na quarta pose, após uma espera de 5 segundos, Shellder se aproxima e morde a cauda. Um efeito de brilho e partículas revela Slowbro, que retorna ao interior da ilha e passa a caminhar pelo cenário.
 
-A cena possui duas câmeras, iluminação Blinn-Phong, texturas pixeladas, água transparente com ondas e textura animada, vento na vegetação e neblina. Os personagens seguem caminhos internos que consideram terreno, obstáculos e limites da base.
+A cena possui duas câmeras, iluminação Blinn-Phong, texturas pixeladas, água transparente com ondas e textura animada, vento na vegetação e neblina. A fogueira permanece acesa com chamas em blocos animados e uma luz pontual alaranjada que oscila e ilumina os objetos próximos. Os personagens seguem caminhos internos que consideram terreno, obstáculos e limites da base.
 
 ### Como executar
 
@@ -57,7 +57,7 @@ Slowbro no cenário após a evolução.
 
 ## Opcionais
 
-Foram implementados **9 itens opcionais**. Os trechos em citação abaixo reproduzem as descrições dos respectivos requisitos do enunciado; em seguida, é descrita sua aplicação no projeto.
+Foram implementados **10 itens opcionais**. Os trechos em citação abaixo reproduzem as descrições dos respectivos requisitos do enunciado; em seguida, é descrita sua aplicação no projeto.
 
 ### 1. Modelos tridimensionais
 
@@ -87,7 +87,7 @@ Vento direcional com intensidade variável deforma as folhas dos coqueiros e sam
 
 > **Líquido**: tenha uma região aquática como um lago, poça d'água, mar ou rio. Uma ideia para que um sólido pareça água é que ele (a) tenha certa transparência, (b) tenha uma textura com suas coordenadas animadas e (c-para oceano ou rio agitado) desloque verticalmente os vértices da superfície ao longo do tempo para criar ondas
 
-Mar com transparência, duas camadas de textura animada, deslocamento vertical dos vértices e cor/opacidade conforme a profundidade. Shellder acompanha a altura das ondas. Implementação em `src/agua.js`, `src/ondas.js` e `src/shaders/agua.*.glsl`.
+Mar com transparência, duas camadas de textura animada, ondas visíveis pelo deslocamento vertical dos vértices e cor/opacidade conforme a profundidade. As ondas são amortecidas junto à borda externa. Shellder acompanha sua altura, mantendo folga sobre o fundo. Implementação em `src/agua.js`, `src/ondas.js` e `src/shaders/agua.*.glsl`.
 
 ### 6. Poses alternativas
 
@@ -108,13 +108,19 @@ Slowpoke e Slowbro alternam entre repouso (`idle`) e passeio (`wandering`). Shel
 
 > **Efeitos de partículas**: para simular fenômenos como fogo, fumaça, água etc.
 
-A evolução emite 40 partículas em forma de cubos ao redor dos personagens, com movimento, variação de tamanho/cor e transparência ao longo do efeito. Implementação em `src/efeito-evolucao.js` e `src/shaders/evolucao.*.glsl`.
+A evolução emite 40 partículas em forma de cubos ao redor dos personagens, com movimento, variação de tamanho/cor e transparência ao longo do efeito. A fogueira também possui 24 partículas em blocos, que sobem, mudam do amarelo para o vermelho e diminuem até desaparecer, com desvio na direção do vento. Implementação em `src/efeito-evolucao.js`, `src/shaders/evolucao.*.glsl` e `src/cenario.js`.
 
 ### 9. Neblina
 
 > **Neblina**: funcionalidade acrescentada por comando do teclado (`N`), podendo ser habilitada e desabilitada durante a execução
 
 Neblina por distância aplicada ao cenário, personagens, água e partículas. Começa ativa, acompanha a distância da câmera e pode ser alternada com `N`. Implementação em `src/ambiente.js` e nos shaders GLSL.
+
+### 10. Fontes de luz pontuais
+
+> **Fontes de luz pontuais**: coloque fontes de luz em alguns objetos do cenário (eg, luz no poste ou uma poça de gosma radioativa)
+
+A fogueira emite luz alaranjada com intensidade oscilante e atenuação por distância, iluminando o terreno e os objetos próximos. A tecla `L` também ativa/desativa essa contribuição de luz; as chamas continuam visíveis. Implementação em `src/cenario.js`, `src/main.js` e nos shaders de iluminação do cenário e da água.
 
 ## Créditos
 

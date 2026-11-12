@@ -11,6 +11,11 @@ uniform vec3 u_cameraPosition;
 uniform vec3 u_material;
 uniform float u_shininess;
 uniform float u_brilhoEvolucao;
+uniform float u_emissao;
+uniform vec3 u_fogoPosicao;
+uniform vec3 u_fogoCor;
+uniform float u_fogoIntensidade;
+uniform float u_fogoAlcance;
 uniform bool u_neblinaAtiva;
 uniform vec3 u_neblinaCor;
 uniform float u_neblinaInicio;
@@ -44,7 +49,19 @@ void main() {
     vec3 diffuseLight = u_material.y * diffuse * u_lightColor;
     vec3 specularLight = u_material.z * specular * u_lightColor;
     cor = base.rgb * (ambientLight + diffuseLight) + specularLight;
+    vec3 paraFogo = u_fogoPosicao - v_worldPosition;
+    float distanciaFogo = length(paraFogo);
+    vec3 direcaoFogo = paraFogo / max(distanciaFogo, 0.001);
+    float atenuacaoFogo = pow(max(0.0, 1.0 - distanciaFogo / u_fogoAlcance), 2.0)
+      / (1.0 + distanciaFogo * distanciaFogo * 0.18);
+    float difusoFogo = max(dot(normal, direcaoFogo), 0.0);
+    vec3 meioFogo = direcaoFogo + viewDirection;
+    meioFogo /= max(length(meioFogo), 0.001);
+    float especularFogo = difusoFogo > 0.0 ? pow(max(dot(normal, meioFogo), 0.0), u_shininess) : 0.0;
+    cor += (base.rgb * u_material.y * difusoFogo + u_material.z * especularFogo)
+      * u_fogoCor * u_fogoIntensidade * atenuacaoFogo;
   }
+  cor = mix(cor, base.rgb, u_emissao);
   cor = mix(cor, vec3(1.0, 0.98, 0.85), u_brilhoEvolucao);
   if (u_neblinaAtiva) {
     float distancia = length(u_cameraPosition - v_worldPosition);

@@ -148,6 +148,7 @@ async function iniciar() {
     gl.useProgram(program.program);
     const iluminacao = {
       ...ambiente.uniforms(eye, animationTime),
+      ...cenario.luzFogueira(animationTime),
       u_cameraPosition: eye,
       u_lightDirection: [-0.5, 1, 0.8],
       u_lightColor: [1, 0.97, 0.90],
@@ -164,6 +165,7 @@ async function iniciar() {
         u_worldViewProjection: m4.multiply(viewProjection, part.world),
         u_worldInverseTranspose: m4.transpose(m4.inverse(part.world)),
         u_color: part.color,
+        u_emissao: part.emissao || 0,
         u_useTexture: Boolean(part.texture),
         u_texture: part.texture || whiteTexture,
         u_folha: Boolean(part.vento),

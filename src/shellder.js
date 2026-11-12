@@ -36,7 +36,7 @@ export function criarPasseioShellder(navegacao, aleatorio = Math.random, profund
 
   function atualizarFlutuacao() {
     // Mais submerso em águas profundas; mantém folga nos degraus rasos.
-    const imersao = Math.min(0.95, profundidadeAgua(posicao[0], posicao[2], 1.65) - 0.12);
+    const imersao = Math.min(0.95, profundidadeAgua(posicao[0], posicao[2], 1.65) - 0.22);
     const alturaBase = ALTURA_SUPERFICIE - imersao - minimoModelo;
     const onda = alturaOnda(posicao[0], posicao[2], tempo, profundidadeAgua(posicao[0], posicao[2]));
     posicao[1] = alturaBase + onda + Math.sin(tempo * 1.4) * 0.015;
