@@ -31,6 +31,7 @@ export function criarPasseioShellder(navegacao, aleatorio = Math.random, profund
   let ativo = true, estado = 'idle', espera = 2.5;
   let percurso = [], proximo = 1, tempoPercurso = 0;
   let tempo = 0, mistura = 0, minimoModelo = -0.15;
+  let controle = null;
 
   function atualizarFlutuacao() {
     // Mais submerso em águas profundas; mantém folga nos degraus rasos.
@@ -78,6 +79,7 @@ export function criarPasseioShellder(navegacao, aleatorio = Math.random, profund
     tempoPercurso = 0;
     tempo = 0;
     mistura = 0;
+    controle = null;
     atualizarFlutuacao();
   }
 
@@ -87,6 +89,26 @@ export function criarPasseioShellder(navegacao, aleatorio = Math.random, profund
     get ativo() { return ativo; },
     get estado() { return estado; },
     definirAtivo(valor) { ativo = Boolean(valor); },
+    controlar(ponto, direcao, animacao) {
+      posicao.splice(0, 3, ...ponto);
+      angulo = direcao;
+      controle = animacao;
+    },
+    liberarControle() {
+      controle = null;
+      estado = 'idle';
+      espera = 2;
+      mistura = 0;
+    },
+    alturaNaAgua(x, z) {
+      const anterior = [...posicao];
+      posicao[0] = x;
+      posicao[2] = z;
+      atualizarFlutuacao();
+      const y = posicao[1];
+      posicao.splice(0, 3, ...anterior);
+      return y;
+    },
     definirModelo(ossos) {
       // Mede as duas animações para o fundo da concha nunca raspar no fundo raso.
       // Cada cubo repete seus cantos nas faces: medir apenas os vértices únicos.
@@ -120,6 +142,7 @@ export function criarPasseioShellder(navegacao, aleatorio = Math.random, profund
     atualizar(delta) {
       const dt = Math.max(0, Math.min(delta, 0.05));
       tempo += dt;
+      if (controle) return;
       let avancou = false;
       if (ativo && estado === 'idle') {
         espera -= dt;
@@ -147,7 +170,7 @@ export function criarPasseioShellder(navegacao, aleatorio = Math.random, profund
       atualizarFlutuacao();
     },
     animacao() {
-      return misturarAnimacoes(repousoShellder(tempo), nadoShellder(tempo), mistura);
+      return controle || misturarAnimacoes(repousoShellder(tempo), nadoShellder(tempo), mistura);
     },
   };
 }

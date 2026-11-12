@@ -10,6 +10,7 @@ import { criarPasseioSlowpoke } from './personagens.js';
 import { criarAgua } from './agua.js';
 import { criarPasseioShellder, ESCALA_SHELLDER } from './shellder.js';
 import { MATERIAIS } from './materiais.js';
+import { criarInteracaoCauda } from './interacao.js';
 
 const canvas = document.querySelector('#cena');
 const errorMessage = document.querySelector('#erro');
@@ -44,6 +45,7 @@ async function iniciar() {
   const navegacao = criarNavegacao(alturaTerreno, cenario.objetos);
   const passeio = criarPasseioSlowpoke(navegacao, slowpokePosition);
   const nado = criarPasseioShellder(navegacao, Math.random, profundidadeAgua);
+  const interacao = criarInteracaoCauda(passeio, nado, navegacao, profundidadeAgua);
   const whiteTexture = twgl.createTexture(gl, { src: [255, 255, 255, 255] });
   let slowpoke = null;
   let shellder = null;
@@ -55,6 +57,7 @@ async function iniciar() {
   shellderPronto.then(modelo => {
     if (!modelo) return;
     nado.definirModelo(modelo.ossos);
+    interacao.definirModelo(modelo.ossos);
     shellder = modelo;
   }).catch(mostrarErro);
   const { m4 } = twgl;
@@ -71,12 +74,17 @@ async function iniciar() {
       || ['INPUT', 'SELECT', 'TEXTAREA'].includes(foco?.tagName) || foco?.isContentEditable) return;
     const tecla = evento.key.toLowerCase();
     if (tecla === 'l') iluminacaoAtiva = !iluminacaoAtiva;
-    if (tecla === 'm') {
+    if (tecla === 'm' && !interacao.bloqueada) {
+      interacao.cancelar();
       passeio.alternarPasseio();
       nado.definirAtivo(passeio.ativo);
     }
-    if (tecla === 'p' && slowpoke) passeio.proximaPose();
+    if (tecla === 'p' && slowpoke && !interacao.bloqueada) {
+      interacao.cancelar();
+      passeio.proximaPose();
+    }
     if (tecla === 'r') {
+      interacao.reiniciar();
       passeio.reiniciar();
       nado.reiniciar();
     }
@@ -96,6 +104,7 @@ async function iniciar() {
     cameras.atualizar(delta);
     if (slowpoke) passeio.atualizar(delta);
     if (shellder) nado.atualizar(delta);
+    interacao.atualizar(delta, Boolean(slowpoke && shellder));
     twgl.resizeCanvasToDisplaySize(canvas, Math.min(window.devicePixelRatio || 1, 2));
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.clearColor(0.894, 0.929, 0.945, 1);

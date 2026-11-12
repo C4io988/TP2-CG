@@ -118,3 +118,25 @@ junto aos shaders, antes da preparação do cenário e da navegação. A calibra
 da concha mede apenas vértices únicos e calcula diretamente a coordenada Y,
 preservando o resultado anterior. O cálculo ficou mais rápido na medição local;
 o tempo total de abertura ainda precisa ser medido no navegador.
+
+## Aproximação e mordida
+
+`interacao.js` acompanha a conclusão da quarta pose e espera 5 segundos. Depois
+assume o Shellder, planeja uma chegada curva pela água e alinha a abertura da
+concha com um ponto transformado de `tail4`, dentro da parte branca da cauda.
+Uma região aquática com margem menor é preparada apenas quando necessária; a
+geometria animada também é conferida contra areia, fundo e limites da base.
+
+A língua é recolhida, a concha fecha em 0,9 segundo e o Slowpoke reage com a
+cabeça e a mandíbula. O Shellder permanece preso ao ponto da cauda. Antes da
+mordida, trocar pose ou retomar o passeio cancela a interação e o faz recuar pelo
+trajeto percorrido. `P`/`M` ficam bloqueados durante o fechamento; nesta etapa,
+voltam a funcionar após a mordida e também permitem soltar a cauda. `R` restaura
+os personagens a qualquer momento. A transformação em Slowbro ainda não existe.
+
+Simuladas chegadas nos modos caminhar e teletransportar, com sementes diferentes:
+espera iniciada somente após a postura, fechamento, fixação na cauda, geometria
+sem contato com areia/fundo/borda e deslocamento contínuo. Conferidos cancelamento
+na espera e durante a aproximação, recuo perto da cauda e após prender a concha.
+Conferidos reinícios em todas as fases e acionamento após passeios prolongados.
+Aparência final pendente de conferência no navegador.

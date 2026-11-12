@@ -91,3 +91,15 @@ export function nadoShellder(tempo) {
   a.tongue2 = { rotation: [-5 + sin(fase - 155 + sin(fase - 155) * 30) * 6, 0, 0] };
   return a;
 }
+
+export function mordidaShellder(tempo, fechamento = 0) {
+  const a = repousoShellder(tempo);
+  a.body = { position: [0, 1, 0] };
+  a.head = { position: [0, -0.5, 0] };
+  a.shell_top = { rotation: [18 - fechamento * 22, 0, 0] };
+  a.shell_bottom = { rotation: [3.5 + fechamento * 3, 0, 0] };
+  // Recolhe a língua para a cauda ocupar a abertura da concha.
+  a.tongue = { scale: [1, 1, 0.15] };
+  a.tongue2 = { scale: [1, 1, 0.15] };
+  return a;
+}

@@ -142,9 +142,9 @@ export function alturaDeApoio(ossos, animacao, x, z, angulo, alturaTerreno, igno
   return Number.isFinite(altura) ? altura : alturaTerreno(x, z);
 }
 
-export function pontaDaCauda(ossos, animacao, posicao, angulo) {
+export function pontaDaCauda(ossos, animacao, posicao, angulo, pontoLocal = [0, 0, 5]) {
   const matrizes = calcularMatrizes(ossos, animacao, posicao, 0.18, angulo);
-  return m4.transformPoint(matrizes.get('tail4'), [0, 0, 5]);
+  return m4.transformPoint(matrizes.get('tail4'), pontoLocal);
 }
 
 export function desenharModelo(gl, programInfo, ossos, textura, animacao, viewProjection, posicao, escala, anguloY, material = MATERIAIS.slowpoke) {

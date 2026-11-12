@@ -13,6 +13,9 @@ O passeio atual usa os patamares planos da areia, desviando dos objetos e da ág
 `P` alterna: em pé, dormindo deitado, deitado com olhos e boca abertos e cauda na água.
 Em Comandos, escolha caminhar até a pose ou teletransportar para vê-la imediatamente.
 Outro `P` troca a pose; `M` sai da pose e retoma o passeio.
+Na quarta pose, após 5 segundos, Shellder se aproxima e morde a cauda.
+`P` e `M` ficam bloqueados apenas durante o fechamento da concha; `R` funciona sempre.
+Depois da mordida, `P` ou `M` solta a cauda. A evolução será feita na próxima etapa.
 
 ## Créditos
 

@@ -61,7 +61,7 @@ export function criarPercursoSuave(navegacao, origem, anguloInicial, rota, ladoI
   return null;
 }
 
-function completarChegada(navegacao, prefixo, destino, anguloFinal, area) {
+export function completarChegada(navegacao, prefixo, destino, anguloFinal, area) {
   const inicio = prefixo.at(-1);
   const erro = diferencaAngular(anguloFinal, inicio.angulo);
   const voltas = Math.abs(erro) <= Math.PI / 2 ? [0]
@@ -122,6 +122,7 @@ export function criarPasseioSlowpoke(navegacao, inicio, aleatorio = Math.random)
   let tempoRepouso = 0, tempoCaminhada = 0, mistura = 0;
   let indicePose = -1, pedidoPose = null, poseFixa = null, transicao = null;
   let modoPose = 'andar';
+  let tempoReacao = null;
   const pontoAtual = () => ({ x: posicao[0], z: posicao[2] });
   const distancia = (a, b) => Math.hypot(b.x - a.x, b.z - a.z);
   const suave = t => t * t * (3 - 2 * t);
@@ -280,6 +281,7 @@ export function criarPasseioSlowpoke(navegacao, inicio, aleatorio = Math.random)
   }
 
   function reiniciar() {
+    tempoReacao = null;
     posicao.splice(0, 3, ...inicio);
     angulo = Math.PI;
     ativo = true;
@@ -345,10 +347,16 @@ export function criarPasseioSlowpoke(navegacao, inicio, aleatorio = Math.random)
     pontaCauda() {
       return modelo ? pontaDaCauda(modelo, animacaoAtual(), posicao, angulo) : null;
     },
+    pontoMordida() {
+      // Dentro da parte branca, antes do extremo mais baixo da ponta.
+      return modelo ? pontaDaCauda(modelo, animacaoAtual(), posicao, angulo, [0, 0, 3]) : null;
+    },
+    reagirAMordida() { tempoReacao = 0; },
     proximaPose, alternarPasseio, reiniciar,
     atualizar(delta) {
       const dt = Math.max(0, Math.min(delta, 0.05));
       tempoRepouso += dt;
+      if (tempoReacao !== null) tempoReacao += dt;
       let avancou = 0;
       if (transicao) {
         transicao.tempo = Math.min(transicao.tempo + dt, transicao.duracao);
@@ -379,6 +387,14 @@ export function criarPasseioSlowpoke(navegacao, inicio, aleatorio = Math.random)
       mistura += limitar(alvoMistura - mistura, -dt * 4, dt * 4);
       atualizarApoio();
     },
-    animacao: animacaoAtual,
+    animacao() {
+      const a = animacaoAtual();
+      if (tempoReacao !== null) {
+        const pulso = Math.sin(Math.min(1, tempoReacao / 0.8) * Math.PI);
+        a.head.rotation[0] -= pulso * 10;
+        a.jaw.rotation[0] -= pulso * 12;
+      }
+      return a;
+    },
   };
 }
