@@ -1,5 +1,13 @@
 # Origem dos recursos utilizados
 
+- Slowbro normal de Kanto: modelo, textura 128 × 64, animações, poser e resolver
+  separados do mesmo pacote Cobblemon 1.7.3. Clipes de repouso, caminhada e piscadas
+  adaptados em `src/animacoes-slowbro.js`; rotações X convertidas ao carregar.
+  A concha é parte do modelo original. Brilho e partículas da evolução são próprios.
+- Sons originais `ambient` e `cry` dos três Pokémon copiados sem alterações para
+  `assets/sons-para-ouvir/`, exclusivamente para escuta manual. Não são carregados
+  pela cena. Nenhum som específico de transformação foi encontrado no pacote.
+
 - TWGL.js 7.0.0: dependência local já presente no projeto; licença MIT de Gregg
   Tavares preservada no cabeçalho da própria biblioteca.
 - Slowpoke normal de Kanto: `slowpoke.geo.json`, `slowpoke.png` e

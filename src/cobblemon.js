@@ -128,8 +128,8 @@ export function calcularMatrizes(ossos, animacao, posicao = [0, 0, 0], escala = 
   return matrizes;
 }
 
-export function alturaDeApoio(ossos, animacao, x, z, angulo, alturaTerreno, ignorarCauda = false) {
-  const matrizes = calcularMatrizes(ossos, animacao, [x, 0, z], 0.18, angulo);
+export function alturaDeApoio(ossos, animacao, x, z, angulo, alturaTerreno, ignorarCauda = false, escala = 0.18) {
+  const matrizes = calcularMatrizes(ossos, animacao, [x, 0, z], escala, angulo);
   let altura = -Infinity;
   for (const osso of ossos.values()) {
     if (ignorarCauda && osso.nome.startsWith('tail')) continue;
@@ -147,7 +147,7 @@ export function pontaDaCauda(ossos, animacao, posicao, angulo, pontoLocal = [0, 
   return m4.transformPoint(matrizes.get('tail4'), pontoLocal);
 }
 
-export function desenharModelo(gl, programInfo, ossos, textura, animacao, viewProjection, posicao, escala, anguloY, material = MATERIAIS.slowpoke) {
+export function desenharModelo(gl, programInfo, ossos, textura, animacao, viewProjection, posicao, escala, anguloY, material = MATERIAIS.slowpoke, brilho = 0) {
   const matrizes = calcularMatrizes(ossos, animacao, posicao, escala, anguloY);
   for (const osso of ossos.values()) {
     if (!osso.buffer) continue;
@@ -162,6 +162,7 @@ export function desenharModelo(gl, programInfo, ossos, textura, animacao, viewPr
       u_texture: textura,
       u_useTexture: true,
       u_color: [1, 1, 1],
+      u_brilhoEvolucao: brilho,
     });
     twgl.drawBufferInfo(gl, osso.buffer);
   }

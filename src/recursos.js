@@ -24,6 +24,10 @@ export async function carregarShellder(gl) {
   return carregarPokemon(gl, 'shellder');
 }
 
+export async function carregarSlowbro(gl) {
+  return carregarPokemon(gl, 'slowbro');
+}
+
 async function carregarPokemon(gl, nome) {
   // Caminhos relativos ao módulo para funcionar também em subdiretórios.
   const modeloUrl = new URL(`../assets/pokemon/models/${nome}.geo.json`, import.meta.url);
@@ -33,7 +37,7 @@ async function carregarPokemon(gl, nome) {
     carregarImagem(texturaUrl),
   ]);
 
-  if (nome === 'shellder') {
+  if (nome === 'shellder' || nome === 'slowbro') {
     // No nosso sistema de eixos, inverte X para as metades da concha abrirem.
     for (const fonte of geometria['minecraft:geometry']) {
       for (const osso of fonte.bones) {

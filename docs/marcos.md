@@ -140,3 +140,35 @@ sem contato com areia/fundo/borda e deslocamento contínuo. Conferidos cancelame
 na espera e durante a aproximação, recuo perto da cauda e após prender a concha.
 Conferidos reinícios em todas as fases e acionamento após passeios prolongados.
 Aparência final pendente de conferência no navegador.
+
+## Evolução para Slowbro
+
+Depois da mordida, transformação automática de 2,5 segundos com brilho local nos
+personagens e 40 partículas em cubos. A troca ocorre no platô branco do efeito:
+somente Slowbro é desenhado depois disso, com a concha original já na cauda.
+Shaders GLSL separados para as partículas; emissividade controlada no shader
+básico somente para os personagens em evolução. Transparência restaurada antes
+da água. Os recursos do Slowbro são carregados em paralelo aos demais.
+
+Repouso, caminhada e piscadas adaptados dos clipes Cobblemon. Escala 0,15 e apoio
+parametrizado, preservando a escala anterior do Slowpoke. O Slowbro espera 1,5
+segundo, sai da margem por rota validada e passeia em uma região com folga de
+4,05 unidades para o corpo/concha e espaço para realizar as curvas.
+
+`P` e `M` bloqueados da mordida até o fim da transformação. Depois, `P` não muda
+a postura do Slowbro e `M` pausa/retoma seu passeio. `R` restaura Slowpoke e
+Shellder separados e limpa o efeito em qualquer etapa. Se o recurso novo falhar,
+os personagens originais continuam visíveis; a mordida aguarda os três modelos.
+
+Sons não foram integrados, conforme solicitado. Seis OGG originais (ambient e
+cry de Slowpoke, Shellder e Slowbro) em `assets/sons-para-ouvir/`, com página de
+escuta manual e créditos. Não há som específico da transformação no pacote.
+
+Simulações de 190 segundos com três sementes e os dois modos de pose: uma única
+troca de modelos por ciclo, brilho máximo na troca, apoio acima do terreno,
+limites e objetos respeitados, movimento contínuo e passeio mantido até o fim.
+Conferidos pausa/retomada e reinícios na espera, aproximação, mordida, antes e
+depois da troca, e após a evolução. Conferida também a ausência de evolução
+quando o novo modelo ainda não está disponível.
+Verificações numéricas e de sintaxe concluídas. A tentativa de validação no Edge
+headless não concluiu a captura; aparência e efeitos ainda precisam de revisão no navegador.

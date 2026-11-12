@@ -6,7 +6,7 @@ export function criarNavegacao(alturaTerreno, objetos, raioTerra = 3.25) {
   const passo = 1.2;
   const limite = MEIA_BASE - 0.18;
   // O corpo e a cauda precisam caber mesmo durante uma curva.
-  const margens = { terra: raioTerra, agua: 1.75, aproximacao: 1.55, mordida: 0.80 };
+  const margens = { terra: raioTerra, agua: 1.75, aproximacao: 1.55, mordida: 0.80, slowbro: 4.05 };
 
   function pontoValido(ponto, area = 'terra') {
     const margem = margens[area];
@@ -29,7 +29,7 @@ export function criarNavegacao(alturaTerreno, objetos, raioTerra = 3.25) {
           ponto.z + Math.sin(angulo) * margem * fator);
         // Nesta etapa o passeio usa patamares planos: não atravessa os degraus
         // com as patas flutuando ou enterradas. A margem fica para as futuras poses.
-        if (area === 'terra' && Math.abs(amostra - altura) > 0.01) return false;
+        if ((area === 'terra' || area === 'slowbro') && Math.abs(amostra - altura) > 0.01) return false;
         if (area === 'aproximacao' && amostra <= 0) return false;
         if (aquatica && amostra > 0) return false;
       }
@@ -98,6 +98,12 @@ export function criarNavegacao(alturaTerreno, objetos, raioTerra = 3.25) {
     return grafo;
   }, configurable: true });
 
+  Object.defineProperty(grafos, 'slowbro', { get() {
+    const grafo = criarGrafo('slowbro');
+    Object.defineProperty(grafos, 'slowbro', { value: grafo });
+    return grafo;
+  }, configurable: true });
+
   function conexoes(ponto, area) {
     return grafos[area].nos.slice().sort((a, b) => distancia(ponto, a) - distancia(ponto, b))
       .slice(0, 24).filter(no => trechoValido(ponto, no, area)).slice(0, 6);
@@ -138,5 +144,5 @@ export function criarNavegacao(alturaTerreno, objetos, raioTerra = 3.25) {
     return null;
   }
 
-  return { grafos, alturaTerreno, pontoValido, trechoValido, alvosAlcancaveis, buscarRota };
+  return { grafos, alturaTerreno, objetos, pontoValido, trechoValido, alvosAlcancaveis, buscarRota };
 }

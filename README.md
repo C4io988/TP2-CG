@@ -14,11 +14,13 @@ O passeio atual usa os patamares planos da areia, desviando dos objetos e da ág
 Em Comandos, escolha caminhar até a pose ou teletransportar para vê-la imediatamente.
 Outro `P` troca a pose; `M` sai da pose e retoma o passeio.
 Na quarta pose, após 5 segundos, Shellder se aproxima e morde a cauda.
-`P` e `M` ficam bloqueados apenas durante o fechamento da concha; `R` funciona sempre.
-Depois da mordida, `P` ou `M` solta a cauda. A evolução será feita na próxima etapa.
+Depois da mordida, brilho e partículas revelam Slowbro, que retorna à areia e passeia.
+`P` e `M` ficam bloqueados durante a mordida/evolução; `R` funciona sempre.
+Slowbro tem uma postura padrão; `M` controla seu passeio e `R` restaura os dois Pokémon separados.
+A cena não reproduz sons. Para escutar os arquivos separados, abra [ouvir.html](assets/sons-para-ouvir/ouvir.html).
 
 ## Créditos
 
 - Geometrias do cenário e texturas pixeladas: criadas no projeto, inspiradas no estilo Minecraft.
 - [TWGL.js 7.0.0](https://github.com/greggman/twgl.js), Gregg Tavares — [MIT](https://opensource.org/license/mit). Avisos preservados na biblioteca.
-- Modelos, texturas e animações de Slowpoke e Shellder: equipe [Cobblemon](https://gitlab.com/cable-mc/cobblemon), versão 1.7.3 — [licença dos recursos](https://gitlab.com/cable-mc/cobblemon-assets/-/blob/master/LICENSE). Animações adaptadas para este projeto.
+- Modelos, texturas, animações e sons de Slowpoke, Shellder e Slowbro: equipe [Cobblemon](https://gitlab.com/cable-mc/cobblemon), versão 1.7.3 — [licença dos recursos](https://gitlab.com/cable-mc/cobblemon-assets/-/blob/master/LICENSE). Animações adaptadas para este projeto; sons separados apenas para escuta.

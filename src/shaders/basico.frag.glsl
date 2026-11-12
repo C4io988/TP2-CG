@@ -10,6 +10,7 @@ uniform vec3 u_ambientColor;
 uniform vec3 u_cameraPosition;
 uniform vec3 u_material;
 uniform float u_shininess;
+uniform float u_brilhoEvolucao;
 
 varying vec3 v_normal;
 varying vec2 v_uv;
@@ -19,6 +20,7 @@ void main() {
   vec4 base = vec4(u_color, 1.0);
   if (u_useTexture) base *= texture2D(u_texture, v_uv);
   if (base.a < 0.1) discard;
+  base.rgb = mix(base.rgb, vec3(1.0, 0.98, 0.85), u_brilhoEvolucao);
   if (!u_lightOn) {
     gl_FragColor = base;
     return;
@@ -40,5 +42,6 @@ void main() {
   vec3 ambientLight = u_material.x * u_ambientColor;
   vec3 diffuseLight = u_material.y * diffuse * u_lightColor;
   vec3 specularLight = u_material.z * specular * u_lightColor;
-  gl_FragColor = vec4(base.rgb * (ambientLight + diffuseLight) + specularLight, base.a);
+  vec3 cor = base.rgb * (ambientLight + diffuseLight) + specularLight;
+  gl_FragColor = vec4(mix(cor, vec3(1.0, 0.98, 0.85), u_brilhoEvolucao), base.a);
 }
