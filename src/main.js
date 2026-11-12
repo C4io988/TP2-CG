@@ -14,6 +14,7 @@ import { criarInteracaoCauda } from './interacao.js';
 import { criarPasseioSlowbro, ESCALA_SLOWBRO } from './slowbro.js';
 import { criarEfeitoEvolucao } from './efeito-evolucao.js';
 import { criarEvolucao } from './evolucao.js';
+import { criarAmbiente, COR_CEU } from './ambiente.js';
 
 const canvas = document.querySelector('#cena');
 const errorMessage = document.querySelector('#erro');
@@ -78,6 +79,7 @@ async function iniciar() {
     slowbro = modelo;
   }).catch(mostrarErro);
   const cameras = criarCameras(canvas);
+  const ambiente = criarAmbiente();
   modoPoses.addEventListener('change', evento => {
     passeio.definirModoPose(evento.target.value);
     canvas.focus({ preventScroll: true });
@@ -90,6 +92,7 @@ async function iniciar() {
       || ['INPUT', 'SELECT', 'TEXTAREA'].includes(foco?.tagName) || foco?.isContentEditable) return;
     const tecla = evento.key.toLowerCase();
     if (tecla === 'l') iluminacaoAtiva = !iluminacaoAtiva;
+    if (tecla === 'n') ambiente.alternarNeblina();
     if (tecla === 'm' && !evolucao.bloqueada) {
       if (passeioSlowbro.visivel) passeioSlowbro.alternarPasseio();
       else {
@@ -125,7 +128,7 @@ async function iniciar() {
     cameras.atualizar(delta);
     if (!passeioSlowbro.visivel) {
       if (slowpoke) passeio.atualizar(delta);
-      if (shellder) nado.atualizar(delta);
+      if (shellder) nado.atualizar(delta, animationTime);
       interacao.atualizar(delta, Boolean(slowpoke && shellder && slowbro));
     }
     try {
@@ -137,20 +140,21 @@ async function iniciar() {
     modoPoses.disabled = evolucao.bloqueada || passeioSlowbro.visivel;
     twgl.resizeCanvasToDisplaySize(canvas, Math.min(window.devicePixelRatio || 1, 2));
     gl.viewport(0, 0, canvas.width, canvas.height);
-    gl.clearColor(0.894, 0.929, 0.945, 1);
+    gl.clearColor(...COR_CEU, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     const { eye, viewProjection } = cameras.matrizes(canvas.width / Math.max(canvas.height, 1));
 
     gl.useProgram(program.program);
     const iluminacao = {
+      ...ambiente.uniforms(eye, animationTime),
       u_cameraPosition: eye,
       u_lightDirection: [-0.5, 1, 0.8],
       u_lightColor: [1, 0.97, 0.90],
       u_ambientColor: [0.90, 0.95, 1],
       u_lightOn: iluminacaoAtiva,
     };
-    twgl.setUniforms(program, { ...iluminacao, u_brilhoEvolucao: 0 });
+    twgl.setUniforms(program, { ...iluminacao, u_brilhoEvolucao: 0, u_viewProjection: viewProjection });
     gl.enable(gl.CULL_FACE);
     for (const part of parts) {
       twgl.setBuffersAndAttributes(gl, program, part.buffer);
@@ -162,6 +166,10 @@ async function iniciar() {
         u_color: part.color,
         u_useTexture: Boolean(part.texture),
         u_texture: part.texture || whiteTexture,
+        u_folha: Boolean(part.vento),
+        u_folhaOrigem: part.vento?.origem || [0, 0, 0],
+        u_folhaAlcance: part.vento?.alcance || 1,
+        u_folhaIntensidade: part.vento?.intensidade || 0,
       });
       twgl.drawBufferInfo(gl, part.buffer);
     }
@@ -184,7 +192,7 @@ async function iniciar() {
         passeioSlowbro.animacao(), viewProjection, passeioSlowbro.posicao,
         ESCALA_SLOWBRO, passeioSlowbro.angulo, MATERIAIS.slowpoke, evolucao.brilho);
     }
-    efeitoEvolucao.desenhar(viewProjection, evolucao.centro, evolucao.progresso);
+    efeitoEvolucao.desenhar(viewProjection, evolucao.centro, evolucao.progresso, iluminacao);
     agua.desenhar(viewProjection, iluminacao, animationTime);
     requestAnimationFrame(render);
   }

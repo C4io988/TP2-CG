@@ -5,7 +5,10 @@ attribute float depth;
 uniform mat4 u_world;
 uniform mat4 u_viewProjection;
 uniform mediump float u_time;
-uniform float u_extent;
+uniform mediump float u_extent;
+uniform mediump float u_ventoForca;
+uniform mediump float u_ventoDeslocamento;
+uniform mediump vec2 u_ventoDirecao;
 
 varying mediump vec3 v_worldPosition;
 varying mediump vec3 v_normal;
@@ -16,13 +19,16 @@ void main() {
   vec4 worldPosition = u_world * position;
   float edge = min(u_extent - abs(worldPosition.x), u_extent - abs(worldPosition.z));
   float fade = smoothstep(0.0, 0.65, edge) * clamp(depth / 0.9, 0.0, 1.0);
-  float phaseA = worldPosition.x * 0.9 + worldPosition.z * 0.35 + u_time * 1.3;
-  float phaseB = worldPosition.z * 0.8 - worldPosition.x * 0.25 - u_time * 0.9;
-  worldPosition.y += fade * (sin(phaseA) * 0.024 + cos(phaseB) * 0.012);
+  vec2 transversal = vec2(-u_ventoDirecao.y, u_ventoDirecao.x);
+  float phaseA = dot(worldPosition.xz, u_ventoDirecao) * 0.85 - u_time * 1.6 - u_ventoDeslocamento * 0.45;
+  float phaseB = dot(worldPosition.xz, transversal) * 1.15 + u_time * 1.1 + u_ventoDeslocamento * 0.2;
+  float amplitudeA = 0.050 + u_ventoForca * 0.025;
+  float amplitudeB = 0.018 + u_ventoForca * 0.010;
+  worldPosition.y += fade * (sin(phaseA) * amplitudeA + cos(phaseB) * amplitudeB);
 
-  float dx = fade * (cos(phaseA) * 0.0216 + sin(phaseB) * 0.003);
-  float dz = fade * (cos(phaseA) * 0.0084 - sin(phaseB) * 0.0096);
-  v_normal = normalize(vec3(-dx, 1.0, -dz));
+  vec2 gradiente = fade * (cos(phaseA) * amplitudeA * 0.85 * u_ventoDirecao
+    - sin(phaseB) * amplitudeB * 1.15 * transversal);
+  v_normal = normalize(vec3(-gradiente.x, 1.0, -gradiente.y));
   v_worldPosition = worldPosition.xyz;
   v_uv = texcoord;
   v_depth = depth;

@@ -3,6 +3,7 @@ import { posicaoNaPraia } from './praia.js';
 import { criarPercursoSuave } from './personagens.js';
 import { calcularMatrizes } from './cobblemon.js';
 import { repousoShellder, nadoShellder, misturarAnimacoes } from './animacoes.js';
+import { alturaOnda } from './ondas.js';
 
 export const ESCALA_SHELLDER = 0.12;
 const VELOCIDADE_NADO = 0.72;
@@ -37,8 +38,7 @@ export function criarPasseioShellder(navegacao, aleatorio = Math.random, profund
     // Mais submerso em águas profundas; mantém folga nos degraus rasos.
     const imersao = Math.min(0.95, profundidadeAgua(posicao[0], posicao[2], 1.65) - 0.12);
     const alturaBase = ALTURA_SUPERFICIE - imersao - minimoModelo;
-    const onda = Math.sin(posicao[0] * 0.9 + posicao[2] * 0.35 + tempo * 1.3) * 0.024
-      + Math.cos(posicao[2] * 0.8 - posicao[0] * 0.25 - tempo * 0.9) * 0.012;
+    const onda = alturaOnda(posicao[0], posicao[2], tempo, profundidadeAgua(posicao[0], posicao[2]));
     posicao[1] = alturaBase + onda + Math.sin(tempo * 1.4) * 0.015;
   }
 
@@ -139,9 +139,9 @@ export function criarPasseioShellder(navegacao, aleatorio = Math.random, profund
       atualizarFlutuacao();
     },
     reiniciar,
-    atualizar(delta) {
+    atualizar(delta, tempoMundo = null) {
       const dt = Math.max(0, Math.min(delta, 0.05));
-      tempo += dt;
+      tempo = tempoMundo ?? tempo + dt;
       if (controle) return;
       let avancou = false;
       if (ativo && estado === 'idle') {

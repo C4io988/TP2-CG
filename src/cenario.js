@@ -3,6 +3,7 @@ import { ALTURA_SUPERFICIE } from './base.js';
 import { posicaoNaPraia } from './praia.js';
 import { criarTexturasCenario } from './texturas.js';
 import { MATERIAIS } from './materiais.js';
+import { ventoNoTempo } from './ambiente.js';
 
 export function criarCenario(gl, alturaTerreno) {
   const cubo = primitives.createCubeBufferInfo(gl, 1);
@@ -47,14 +48,17 @@ export function criarCenario(gl, alturaTerreno) {
         [0.68 - i * 0.045, 0.97, 0.68 - i * 0.045], 'madeira', 'madeira', [1, 0.93, 0.85]);
     }
     const copa = no(raiz, m4.translation([1.4, 5.4, 0.18]));
+    const ventoFolhas = { origem: Array.from(m4.transformPoint(raiz.local, [1.4, 5.4, 0.18])),
+      alcance: 3.5 * escala, intensidade: 1 };
     for (let folha = 0; folha < 7; folha++) {
       const ramo = no(copa, m4.rotationY(folha * Math.PI * 2 / 7 + 0.08 * Math.sin(folha * 3)));
       const comprimento = 0.88 + 0.12 * Math.sin(folha * 2.7);
       for (let segmento = 0; segmento < 4; segmento++) {
         const queda = [0.10, 0.24, -0.03, -0.55][segmento];
-        peca(ramo, [0.38 + segmento * comprimento * 0.86, queda, 0],
+        const folhaPeca = peca(ramo, [0.38 + segmento * comprimento * 0.86, queda, 0],
           [comprimento, 0.18, 0.65 - segmento * 0.12], 'folhas', 'folhas',
           [0.91 + folha * 0.012, 1, 0.88], [0, 0, segmento < 2 ? 0.12 : -0.38]);
+        folhaPeca.parte.vento = ventoFolhas;
       }
     }
     for (const [x, y, z] of [[0.95, 4.9, 0.48], [1.65, 4.85, -0.16]]) {
@@ -64,11 +68,14 @@ export function criarCenario(gl, alturaTerreno) {
 
   function samambaia(distancia, lado, escala, giro) {
     const raiz = registrar('samambaia', distancia, lado, 0.65, escala, giro);
+    const ventoFolhas = { origem: Array.from(m4.transformPoint(raiz.local, [0, 0.05, 0])),
+      alcance: 1.2 * escala, intensidade: 0.25 };
     peca(raiz, [0, 0.19, 0], [0.12, 0.38, 0.12], 'folhas', 'folhas');
     for (let i = 0; i < 5; i++) {
       const ramo = no(raiz, m4.rotationY(i * Math.PI * 2 / 5));
-      peca(ramo, [0.30, 0.40, 0], [0.85, 0.14, 0.33], 'folhas', 'folhas', [0.85, 1, 0.83], [0, 0, 0.48]);
-      peca(ramo, [0.88, 0.43, 0], [0.58, 0.12, 0.24], 'folhas', 'folhas', [0.94, 1, 0.88], [0, 0, -0.25]);
+      const interna = peca(ramo, [0.30, 0.40, 0], [0.85, 0.14, 0.33], 'folhas', 'folhas', [0.85, 1, 0.83], [0, 0, 0.48]);
+      const externa = peca(ramo, [0.88, 0.43, 0], [0.58, 0.12, 0.24], 'folhas', 'folhas', [0.94, 1, 0.88], [0, 0, -0.25]);
+      interna.parte.vento = externa.parte.vento = ventoFolhas;
     }
   }
 
@@ -164,8 +171,9 @@ export function criarCenario(gl, alturaTerreno) {
   return {
     partes, objetos,
     atualizar(tempo) {
+      const vento = ventoNoTempo(tempo);
       for (const { raiz, helice } of helices) {
-        helice.local = m4.rotateZ(m4.translation([0, 3.65, 0.32]), tempo * 0.9);
+        helice.local = m4.rotateZ(m4.translation([0, 3.65, 0.32]), tempo * 0.5 + vento.deslocamento * 1.2);
         atualizarNo(helice, raiz.world);
       }
     },

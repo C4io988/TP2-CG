@@ -11,37 +11,45 @@ uniform vec3 u_cameraPosition;
 uniform vec3 u_material;
 uniform float u_shininess;
 uniform float u_brilhoEvolucao;
+uniform bool u_neblinaAtiva;
+uniform vec3 u_neblinaCor;
+uniform float u_neblinaInicio;
+uniform float u_neblinaFim;
 
-varying vec3 v_normal;
-varying vec2 v_uv;
-varying vec3 v_worldPosition;
+varying mediump vec3 v_normal;
+varying mediump vec2 v_uv;
+varying mediump vec3 v_worldPosition;
 
 void main() {
   vec4 base = vec4(u_color, 1.0);
   if (u_useTexture) base *= texture2D(u_texture, v_uv);
   if (base.a < 0.1) discard;
   base.rgb = mix(base.rgb, vec3(1.0, 0.98, 0.85), u_brilhoEvolucao);
-  if (!u_lightOn) {
-    gl_FragColor = base;
-    return;
-  }
+  vec3 cor = base.rgb;
+  if (u_lightOn) {
+    vec3 normal = normalize(v_normal);
+    if (!gl_FrontFacing) normal = -normal;
+    vec3 lightDirection = normalize(u_lightDirection);
+    vec3 viewDirection = normalize(u_cameraPosition - v_worldPosition);
+    // Blinn-Phong: vetor intermediário entre a direção da luz e a da câmera.
+    vec3 sumDirections = lightDirection + viewDirection;
+    vec3 halfVector = sumDirections / max(length(sumDirections), 0.0001);
+    float diffuse = max(dot(normal, lightDirection), 0.0);
+    float specular = 0.0;
+    if (diffuse > 0.0) {
+      specular = pow(max(dot(normal, halfVector), 0.0), u_shininess);
+    }
 
-  vec3 normal = normalize(v_normal);
-  if (!gl_FrontFacing) normal = -normal;
-  vec3 lightDirection = normalize(u_lightDirection);
-  vec3 viewDirection = normalize(u_cameraPosition - v_worldPosition);
-  // Blinn-Phong: vetor intermediário entre a direção da luz e a da câmera.
-  vec3 sumDirections = lightDirection + viewDirection;
-  vec3 halfVector = sumDirections / max(length(sumDirections), 0.0001);
-  float diffuse = max(dot(normal, lightDirection), 0.0);
-  float specular = 0.0;
-  if (diffuse > 0.0) {
-    specular = pow(max(dot(normal, halfVector), 0.0), u_shininess);
+    vec3 ambientLight = u_material.x * u_ambientColor;
+    vec3 diffuseLight = u_material.y * diffuse * u_lightColor;
+    vec3 specularLight = u_material.z * specular * u_lightColor;
+    cor = base.rgb * (ambientLight + diffuseLight) + specularLight;
   }
-
-  vec3 ambientLight = u_material.x * u_ambientColor;
-  vec3 diffuseLight = u_material.y * diffuse * u_lightColor;
-  vec3 specularLight = u_material.z * specular * u_lightColor;
-  vec3 cor = base.rgb * (ambientLight + diffuseLight) + specularLight;
-  gl_FragColor = vec4(mix(cor, vec3(1.0, 0.98, 0.85), u_brilhoEvolucao), base.a);
+  cor = mix(cor, vec3(1.0, 0.98, 0.85), u_brilhoEvolucao);
+  if (u_neblinaAtiva) {
+    float distancia = length(u_cameraPosition - v_worldPosition);
+    float neblina = smoothstep(u_neblinaInicio, u_neblinaFim, distancia) * 0.78;
+    cor = mix(cor, u_neblinaCor, neblina);
+  }
+  gl_FragColor = vec4(cor, base.a);
 }

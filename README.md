@@ -5,6 +5,7 @@ Shaders GLSL em `src/shaders/`, separados em vertex e fragment shader.
 
 Por enquanto: ilha e relevo em blocos, Slowpoke passeando e Shellder nadando no mar.
 Água pixelada com transparência, fundo em degraus, ondas suaves e textura animada.
+Vento nas folhas, no catavento e na água. `N` mostra/esconde a neblina.
 Coqueiros, vegetação, pedras, cocos, conchas, guarda-sol, catavento giratório e base de fogueira.
 Abra `index.html` pelo Live Server. `1`: câmera automática; `2`: câmera manual
 (arraste para girar). Use o scroll para zoom nas duas e `L` para alternar a iluminação Blinn-Phong.

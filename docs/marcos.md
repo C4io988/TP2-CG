@@ -172,3 +172,26 @@ depois da troca, e após a evolução. Conferida também a ausência de evoluç�
 quando o novo modelo ainda não está disponível.
 Verificações numéricas e de sintaxe concluídas. A tentativa de validação no Edge
 headless não concluiu a captura; aparência e efeitos ainda precisam de revisão no navegador.
+
+## Vento e neblina
+
+Vento direcional com rajadas suaves, compartilhado pela vegetação, catavento e
+água. As 182 partes de folhas dos coqueiros e samambaias são deformadas no vertex
+shader, preservando as raízes e corrigindo as normais. Troncos, objetos fixos e
+Pokémon não recebem a deformação. A hélice varia a velocidade sem saltos de fase.
+
+Ondas e deslocamento das texturas acompanham a direção do vento. A flutuação do
+Shellder usa a mesma fórmula de altura e o relógio da cena. Ondas máximas abaixo
+de 0,047 unidade, amortecidas junto à moldura. Água rasa menos clara e um pouco
+mais opaca, com brilho especular limitado e atenuado na margem e na borda externa.
+
+Neblina leve por distância, inicialmente ativa, alternada por `N`. Aplica-se ao
+cenário, personagens, água e partículas, inclusive com `L` desligado. A faixa
+acompanha a distância da câmera para manter a ilha legível ao usar zoom. `R`
+reinicia os personagens preservando vento, tempo e escolha da neblina.
+
+Verificados: continuidade das rajadas, amplitude e contenção das ondas, matrizes
+dos objetos fixos preservadas, interfaces e precisões compartilhadas dos três
+programas GLSL. Simuladas quatro sequências completas de evolução, com três
+sementes, nos dois modos de pose, usando o relógio compartilhado da água. Sintaxe
+e diferenças de código conferidas. Aparência final pendente de revisão no navegador.
