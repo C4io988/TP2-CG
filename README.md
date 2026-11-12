@@ -8,6 +8,8 @@ Um diorama de praia inspirado no estilo em blocos do Minecraft, com Slowpoke pas
 
 Slowpoke possui quatro poses: em pé, dormindo deitado, deitado acordado e deitado na margem com a cauda na água. Na quarta pose, após uma espera de 5 segundos, Shellder se aproxima e morde a cauda. Um efeito de brilho e partículas revela Slowbro, que retorna ao interior da ilha e passa a caminhar pelo cenário.
 
+O fundo é um skybox com céu em degradê azul, sem nuvens. O céu acompanha a câmera e destaca a base branca da pokébola. A neblina mantém o tom branco suave original.
+
 A cena possui duas câmeras, iluminação Blinn-Phong, texturas pixeladas, água transparente com ondas e textura animada, vento na vegetação e neblina. A fogueira permanece acesa com chamas em blocos animados e uma luz pontual alaranjada que oscila e ilumina os objetos próximos. Os personagens seguem caminhos internos que consideram terreno, obstáculos e limites da base.
 
 ### Como executar
@@ -57,7 +59,7 @@ Slowbro no cenário após a evolução.
 
 ## Opcionais
 
-Foram implementados **10 itens opcionais**. Os trechos em citação abaixo reproduzem as descrições dos respectivos requisitos do enunciado; em seguida, é descrita sua aplicação no projeto.
+Foram implementados **11 itens opcionais**. Os trechos em citação abaixo reproduzem as descrições dos respectivos requisitos do enunciado; em seguida, é descrita sua aplicação no projeto.
 
 ### 1. Modelos tridimensionais
 
@@ -122,9 +124,15 @@ Neblina por distância aplicada ao cenário, personagens, água e partículas. C
 
 A fogueira emite luz alaranjada com intensidade oscilante e atenuação por distância, iluminando o terreno e os objetos próximos. A tecla `L` também ativa/desativa essa contribuição de luz; as chamas continuam visíveis. Implementação em `src/cenario.js`, `src/main.js` e nos shaders de iluminação do cenário e da água.
 
+### 11. Skybox
+
+> **Skybox, skyphere ou skydome**: se considerarmos que nosso mundo está definido dentro de um cubo (skybox), podemos colocar uma imagem de textura em cada face interna (são 6) que represente o horizonte naquela direção.
+
+Céu em degradê azul, sem nuvens, usando uma textura cúbica de seis faces geradas proceduralmente no projeto. O fundo acompanha a câmera, sem aproximação das paredes ao usar zoom. A neblina mantém o tom branco suave original. Implementação em `src/ceu.js` e `src/shaders/ceu.*.glsl`.
+
 ## Créditos
 
-- **Geometrias do cenário, texturas procedurais e efeito visual de evolução:** criados no projeto. O cenário adota uma estética em blocos inspirada em Minecraft; não utiliza arquivos de textura do Minecraft.
+- **Geometrias do cenário, texturas procedurais, skybox em degradê e efeito visual de evolução:** criados no projeto. O cenário adota uma estética em blocos inspirada em Minecraft; não utiliza arquivos de textura do Minecraft.
 - **TWGL.js 7.0.0:** [Gregg Tavares](https://github.com/greggman/twgl.js), sob [licença MIT](https://opensource.org/license/mit). A biblioteca está em `vendor/twgl-full.module.js`, com seus avisos de licença preservados.
 - **Modelos, texturas, animações de referência e sons de Slowpoke, Shellder e Slowbro:** equipe [Cobblemon](https://gitlab.com/cable-mc/cobblemon), versão 1.7.3. Consulte a [licença dos recursos](https://gitlab.com/cable-mc/cobblemon-assets/-/blob/master/LICENSE). As animações foram adaptadas para o projeto; os sons permanecem separados para escuta manual.
 

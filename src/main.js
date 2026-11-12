@@ -15,6 +15,7 @@ import { criarPasseioSlowbro, ESCALA_SLOWBRO } from './slowbro.js';
 import { criarEfeitoEvolucao } from './efeito-evolucao.js';
 import { criarEvolucao } from './evolucao.js';
 import { criarAmbiente, COR_CEU } from './ambiente.js';
+import { criarCeu } from './ceu.js';
 
 const canvas = document.querySelector('#cena');
 const errorMessage = document.querySelector('#erro');
@@ -36,12 +37,13 @@ async function iniciar() {
   const slowpokePronto = carregarSlowpoke(gl).catch(mostrarErro);
   const shellderPronto = carregarShellder(gl).catch(mostrarErro);
   const slowbroPronto = carregarSlowbro(gl).catch(mostrarErro);
-  const [shadersBasicos, shadersAgua, shadersEvolucao] = await Promise.all([
-    carregarShaders(), carregarShaders('agua'), carregarShaders('evolucao'),
+  const [shadersBasicos, shadersAgua, shadersEvolucao, shadersCeu] = await Promise.all([
+    carregarShaders(), carregarShaders('agua'), carregarShaders('evolucao'), carregarShaders('ceu'),
   ]);
   const { vertexShader, fragmentShader } = shadersBasicos;
   const program = twgl.createProgramInfo(gl, [vertexShader, fragmentShader]);
   if (!program) throw new Error('Falha ao preparar os shaders.');
+  const ceu = criarCeu(gl, shadersCeu);
   const { partes: parts, agua: superficieAgua, alturaTerreno, profundidadeAgua } = criarBase(gl);
   const agua = criarAgua(gl, superficieAgua, shadersAgua);
   const efeitoEvolucao = criarEfeitoEvolucao(gl, shadersEvolucao);
@@ -144,6 +146,7 @@ async function iniciar() {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     const { eye, viewProjection } = cameras.matrizes(canvas.width / Math.max(canvas.height, 1));
+    ceu.desenhar(viewProjection, eye);
 
     gl.useProgram(program.program);
     const iluminacao = {

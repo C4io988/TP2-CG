@@ -1,4 +1,4 @@
-export const COR_CEU = [0.894, 0.929, 0.945];
+export const COR_CEU = [0.55, 0.72, 0.84];
 export const DIRECAO_VENTO = [0.8, 0.6];
 
 export function ventoNoTempo(tempo) {
@@ -25,7 +25,7 @@ export function criarAmbiente() {
         u_ventoDeslocamento: vento.deslocamento,
         u_ventoDirecao: vento.direcao,
         u_neblinaAtiva: neblinaAtiva,
-        u_neblinaCor: COR_CEU,
+        u_neblinaCor: [0.894, 0.929, 0.945],
         // A faixa acompanha o zoom para a ilha continuar legível de longe.
         u_neblinaInicio: Math.max(8, distancia - 12),
         u_neblinaFim: Math.max(8, distancia - 12) + 25,
