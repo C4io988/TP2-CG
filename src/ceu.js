@@ -53,7 +53,7 @@ export function criarCeu(gl, shaders) {
   gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
   return {
-    desenhar(viewProjection, eye) {
+    desenhar(viewProjection, eye, noite = 0, tempo = 0) {
       // Só a direção do olhar importa: o cubo nunca pode ser alcançado pelo zoom.
       gl.disable(gl.DEPTH_TEST);
       gl.disable(gl.CULL_FACE);
@@ -65,6 +65,8 @@ export function criarCeu(gl, shaders) {
           u_inversaViewProjection: twgl.m4.inverse(viewProjection),
           u_cameraPosition: eye,
           u_ceu: textura,
+          u_noite: noite,
+          u_tempo: tempo,
         });
         twgl.drawBufferInfo(gl, tela);
       } finally {

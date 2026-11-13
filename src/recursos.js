@@ -4,7 +4,7 @@ import { criarModelo } from './cobblemon.js';
 export async function carregarShaders(nome = 'basico') {
   async function carregarTexto(arquivo) {
     const url = new URL(`./shaders/${arquivo}`, import.meta.url);
-    const resposta = await fetch(url);
+    const resposta = await fetch(url, { cache: 'no-cache' });
     if (!resposta.ok) throw new Error(`Shader ${arquivo}: HTTP ${resposta.status}`);
     return resposta.text();
   }
@@ -60,7 +60,7 @@ async function carregarPokemon(gl, nome) {
 }
 
 async function carregarJson(url) {
-  const resposta = await fetch(url);
+  const resposta = await fetch(url, { cache: 'no-cache' });
   if (!resposta.ok) throw new Error(`Modelo ${url.pathname.split('/').at(-1)}: HTTP ${resposta.status}`);
   return resposta.json();
 }

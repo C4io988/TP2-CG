@@ -1,7 +1,7 @@
 import * as twgl from '../vendor/twgl-full.module.js';
 import { criarBase, ALTURA_SUPERFICIE } from './base.js';
 import { criarCameras } from './cameras.js';
-import { carregarSlowpoke, carregarShellder, carregarSlowbro, carregarShaders } from './recursos.js';
+import { carregarSlowpoke, carregarShellder, carregarSlowbro, carregarShaders } from './recursos.js?v=dia-noite';
 import { desenharModelo } from './cobblemon.js';
 import { posicaoNaPraia } from './praia.js';
 import { criarCenario } from './cenario.js';
@@ -14,12 +14,13 @@ import { criarInteracaoCauda } from './interacao.js';
 import { criarPasseioSlowbro, ESCALA_SLOWBRO } from './slowbro.js';
 import { criarEfeitoEvolucao } from './efeito-evolucao.js';
 import { criarEvolucao } from './evolucao.js';
-import { criarAmbiente, COR_CEU } from './ambiente.js';
-import { criarCeu } from './ceu.js';
+import { criarAmbiente, COR_CEU } from './ambiente.js?v=dia-noite-2';
+import { criarCeu } from './ceu.js?v=dia-noite';
 
 const canvas = document.querySelector('#cena');
 const errorMessage = document.querySelector('#erro');
 const modoPoses = document.querySelector('#modo-poses');
+const botaoDiaNoite = document.querySelector('#dia-noite');
 
 iniciar().catch(mostrarErro);
 
@@ -87,12 +88,19 @@ async function iniciar() {
     canvas.focus({ preventScroll: true });
   });
   let iluminacaoAtiva = true;
+  function alternarDiaNoite() {
+    ambiente.alternarDiaNoite();
+    botaoDiaNoite.setAttribute('aria-pressed', String(ambiente.noturno));
+    botaoDiaNoite.textContent = ambiente.noturno ? '☾ Noite · Dia/Noite [3]' : '☀ Dia · Dia/Noite [3]';
+  }
+  botaoDiaNoite.addEventListener('click', alternarDiaNoite);
 
   window.addEventListener('keydown', evento => {
     const foco = document.activeElement;
     if (evento.repeat || evento.ctrlKey || evento.altKey || evento.metaKey
       || ['INPUT', 'SELECT', 'TEXTAREA'].includes(foco?.tagName) || foco?.isContentEditable) return;
     const tecla = evento.key.toLowerCase();
+    if (tecla === '3') alternarDiaNoite();
     if (tecla === 'l') iluminacaoAtiva = !iluminacaoAtiva;
     if (tecla === 'n') ambiente.alternarNeblina();
     if (tecla === 'm' && !evolucao.bloqueada) {
@@ -126,6 +134,7 @@ async function iniciar() {
     const delta = previousTime === null ? 0 : Math.min((now - previousTime) / 1000, 0.05);
     previousTime = now;
     animationTime += delta;
+    ambiente.atualizar(delta);
     cenario.atualizar(animationTime);
     cameras.atualizar(delta);
     if (!passeioSlowbro.visivel) {
@@ -146,16 +155,13 @@ async function iniciar() {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     const { eye, viewProjection } = cameras.matrizes(canvas.width / Math.max(canvas.height, 1));
-    ceu.desenhar(viewProjection, eye);
+    ceu.desenhar(viewProjection, eye, ambiente.noite, animationTime);
 
     gl.useProgram(program.program);
     const iluminacao = {
       ...ambiente.uniforms(eye, animationTime),
       ...cenario.luzFogueira(animationTime),
       u_cameraPosition: eye,
-      u_lightDirection: [-0.5, 1, 0.8],
-      u_lightColor: [1, 0.97, 0.90],
-      u_ambientColor: [0.90, 0.95, 1],
       u_lightOn: iluminacaoAtiva,
     };
     twgl.setUniforms(program, { ...iluminacao, u_brilhoEvolucao: 0, u_viewProjection: viewProjection });

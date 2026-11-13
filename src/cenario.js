@@ -103,6 +103,34 @@ export function criarCenario(gl, alturaTerreno) {
     }
   }
 
+  function casteloAreia(distancia, lado) {
+    const raiz = registrar('castelo de areia', distancia, lado, 1.8, 1, 0.35);
+    const areia = (posicao, tamanho, cor = [1, 1, 1]) =>
+      peca(raiz, posicao, tamanho, 'areia', 'areia', cor);
+    areia([0, 0.12, 0], [2.5, 0.24, 2.5]);
+    areia([0, 0.70, 0], [1.8, 1.2, 1.8]);
+    // Quatro torres com ameias, feitas da mesma areia do corpo central.
+    for (const x of [-0.85, 0.85]) {
+      for (const z of [-0.85, 0.85]) {
+        areia([x, 1.05, z], [0.70, 1.8, 0.70], [0.96, 0.91, 0.82]);
+        areia([x, 1.93, z], [0.82, 0.20, 0.82]);
+        for (const dx of [-0.27, 0.27]) {
+          for (const dz of [-0.27, 0.27]) {
+            areia([x + dx, 2.15, z + dz], [0.25, 0.30, 0.25]);
+          }
+        }
+      }
+    }
+    // Entrada escavada, com verga e laterais de areia.
+    peca(raiz, [0, 0.59, 0.906], [0.48, 0.70, 0.025], null, 'areia', [0.31, 0.23, 0.13]);
+    areia([0, 1.0, 0.96], [0.70, 0.16, 0.20]);
+    areia([-0.32, 0.59, 0.96], [0.16, 0.70, 0.20]);
+    areia([0.32, 0.59, 0.96], [0.16, 0.70, 0.20]);
+    areia([0, 1.55, 0], [0.75, 0.50, 0.75]);
+    peca(raiz, [0, 2.24, 0], [0.06, 1.0, 0.06], 'madeira', 'madeira');
+    peca(raiz, [0.32, 2.55, 0], [0.58, 0.32, 0.04], 'tecido', 'tecido', [0.92, 0.32, 0.22]);
+  }
+
   function guardaSol(distancia, lado) {
     const raiz = registrar('guarda-sol', distancia, lado, 1.9, 1, -0.18);
     peca(raiz, [0, 1.7, 0], [0.14, 3.4, 0.14], 'madeira', 'madeira', [1, 1, 0.95]);
@@ -158,6 +186,8 @@ export function criarCenario(gl, alturaTerreno) {
     [-8, -8.8, 0.68, 2.1], [-10.8, 5.8, 0.80, 0.6], [-7.3, 5.8, 0.62, 2.7],
     [-6.4, 6.6, 0.72, 1.6], [-12, -0.5, 0.67, 0.2]]) samambaia(d, l, s, g);
   guardaSol(-2.5, -6);
+  // Patamar plano junto ao fundo: mantém livre o corredor dos personagens.
+  casteloAreia(-13, 2);
   catavento(-7, -5);
   fogueira(-3, 5);
   for (const [d, l, s, g] of [[3, 7, 1, 0.4], [3.9, 7.7, 0.44, 1.7], [2.2, 7.9, 0.58, 2.6],

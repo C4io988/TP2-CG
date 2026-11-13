@@ -49,6 +49,7 @@ export function criarGeometriaPraia(meiaLargura, divisoes = 64) {
     return alturas[linha * divisoes + coluna];
   }
   function alturaTerreno(x, z) {
+    if (Math.hypot(x, z) > meiaLargura) return 0;
     return alturaCelula(Math.floor((x + meiaLargura) / tamanhoBloco),
       Math.floor((z + meiaLargura) / tamanhoBloco));
   }
@@ -119,7 +120,33 @@ export function criarGeometriaPraia(meiaLargura, divisoes = 64) {
   const malha = () => ({ position: [], normal: [], texcoord: [], indices: [] });
   const areia = malha(), agua = malha(), lateral = malha(), fundo = malha();
   agua.depth = { numComponents: 1, data: [] };
+  // Recorta as células contra um círculo de 128 segmentos, preservando os
+  // degraus internos e uma borda lisa comum à areia, à água e ao fundo.
+  const segmentos = 128;
+  const apotema = meiaLargura * Math.cos(Math.PI / segmentos);
+  function recortar(pontos) {
+    if (pontos.every(([x, , z]) => Math.hypot(x, z) <= apotema)) return pontos;
+    for (let i = 0; i < segmentos && pontos.length; i++) {
+      const angulo = (i + 0.5) * Math.PI * 2 / segmentos;
+      const nx = Math.cos(angulo), nz = Math.sin(angulo);
+      const saida = [];
+      for (let j = 0; j < pontos.length; j++) {
+        const a = pontos[j], b = pontos[(j + 1) % pontos.length];
+        const da = a[0] * nx + a[2] * nz - apotema;
+        const db = b[0] * nx + b[2] * nz - apotema;
+        if (da <= 0) saida.push(a);
+        if ((da <= 0) !== (db <= 0)) {
+          const t = da / (da - db);
+          saida.push(a.map((v, k) => v + (b[k] - v) * t));
+        }
+      }
+      pontos = saida;
+    }
+    return pontos;
+  }
   function adicionarFace(dados, pontos, normal, tamanhoTextura) {
+    pontos = recortar(pontos);
+    if (pontos.length < 3) return;
     const inicio = dados.position.length / 3;
     for (const [x, y, z] of pontos) {
       dados.position.push(x, y, z);
@@ -128,7 +155,9 @@ export function criarGeometriaPraia(meiaLargura, divisoes = 64) {
         (normal[1] ? z : -y) / tamanhoTextura);
       if (dados === agua) agua.depth.data.push(profundidadeVertice(x, z));
     }
-    dados.indices.push(inicio, inicio + 1, inicio + 2, inicio, inicio + 2, inicio + 3);
+    for (let i = 1; i < pontos.length - 1; i++) {
+      dados.indices.push(inicio, inicio + i, inicio + i + 1);
+    }
   }
 
   for (let linha = 0; linha < divisoes; linha++) {

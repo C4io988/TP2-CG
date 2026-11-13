@@ -11,7 +11,7 @@ export function criarNavegacao(alturaTerreno, objetos, raioTerra = 3.25) {
   function pontoValido(ponto, area = 'terra') {
     const margem = margens[area];
     if (margem === undefined) throw new Error(`Área de navegação desconhecida: ${area}`);
-    if (Math.abs(ponto.x) + margem >= limite || Math.abs(ponto.z) + margem >= limite) return false;
+    if (Math.hypot(ponto.x, ponto.z) + margem >= limite) return false;
     const altura = alturaTerreno(ponto.x, ponto.z);
     const aquatica = area === 'agua' || area === 'mordida';
     if (!aquatica) {

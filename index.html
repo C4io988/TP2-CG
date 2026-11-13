@@ -8,11 +8,12 @@
     <link rel="preload" as="image" href="./assets/pokemon/textures/slowpoke.png">
     <link rel="preload" as="image" href="./assets/pokemon/textures/shellder.png">
     <link rel="preload" as="image" href="./assets/pokemon/textures/slowbro.png">
-    <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet" href="./styles.css?v=dia-noite">
   </head>
   <body>
     <main>
-      <canvas id="cena" tabindex="0" aria-label="Ilha em blocos sobre uma base quadrada de pokébola"></canvas>
+      <canvas id="cena" tabindex="0" aria-label="Ilha em blocos sobre uma base hemisférica de pokébola"></canvas>
+      <button id="dia-noite" type="button" aria-label="Alternar Dia/Noite" aria-pressed="false">☀ Dia · Dia/Noite [3]</button>
       <details class="comandos">
         <summary>Comandos</summary>
         <div class="modo-poses">
@@ -25,6 +26,7 @@
         <dl>
           <div><dt><kbd>1</kbd></dt><dd>Câmera automática</dd></div>
           <div><dt><kbd>2</kbd></dt><dd>Câmera manual</dd></div>
+          <div><dt><kbd>3</kbd></dt><dd>Alternar dia/noite</dd></div>
           <div><dt><kbd>L</kbd></dt><dd>Ligar/desligar iluminação</dd></div>
           <div><dt><kbd>N</kbd></dt><dd>Mostrar/esconder neblina</dd></div>
           <div><dt><kbd>P</kbd></dt><dd>Próxima pose</dd></div>
@@ -36,6 +38,6 @@
       </details>
       <p id="erro" role="alert" hidden></p>
     </main>
-    <script type="module" src="./src/main.js"></script>
+    <script type="module" src="./src/main.js?v=dia-noite-2"></script>
   </body>
 </html>

@@ -4,11 +4,11 @@ Trabalho Prático 2 de Computação Gráfica, desenvolvido em JavaScript, WebGL 
 
 ## A Cena
 
-Um diorama de praia inspirado no estilo em blocos do Minecraft, com Slowpoke passeando pela areia e Shellder nadando no mar. A base da pokébola e sua parte inferior são representadas por blocos, acompanhando a proposta visual. O cenário inclui relevo, coqueiros, samambaias, pedras, cocos, conchas, guarda-sol, catavento e uma base de fogueira.
+Um diorama de praia inspirado no estilo em blocos do Minecraft, com Slowpoke passeando pela areia e Shellder nadando no mar. O diorama tem contorno circular, casco hemisférico branco, aro escuro e botão frontal, simulando uma pokébola aberta. O interior mantém o estilo em blocos. O cenário inclui relevo, coqueiros, samambaias, pedras, cocos, conchas, guarda-sol, catavento e uma base de fogueira.
 
 Slowpoke possui quatro poses: em pé, dormindo deitado, deitado acordado e deitado na margem com a cauda na água. Na quarta pose, após uma espera de 5 segundos, Shellder se aproxima e morde a cauda. Um efeito de brilho e partículas revela Slowbro, que retorna ao interior da ilha e passa a caminhar pelo cenário.
 
-O fundo é um skybox com céu em degradê azul, sem nuvens. O céu acompanha a câmera e destaca a base branca da pokébola. A neblina mantém o tom branco suave original.
+O fundo é um skybox com céu em degradê azul durante o dia e céu escuro com lua e estrelas cintilantes à noite. O botão **Dia/Noite** e a tecla `3` alternam o período em 1,5 segundo, ajustando também a luz ambiente, a luz direcional e a neblina. O céu acompanha a câmera e destaca a base branca da pokébola. A neblina tem tom claro durante o dia e azul-escuro durante a noite.
 
 A cena possui duas câmeras, iluminação Blinn-Phong, texturas pixeladas, água transparente com ondas e textura animada, vento na vegetação e neblina. A fogueira permanece acesa com chamas em blocos animados e uma luz pontual alaranjada que oscila e ilumina os objetos próximos. Os personagens seguem caminhos internos que consideram terreno, obstáculos e limites da base.
 
@@ -22,6 +22,7 @@ Abra a pasta do projeto no Visual Studio Code e inicie `index.html` pela extens�
 | --- | --- |
 | `1` | Câmera automática, orbitando o centro a aproximadamente 45° acima do chão. |
 | `2` | Câmera orbital manual. |
+| `3` ou botão **Dia/Noite** | Alternar entre dia e noite com transição suave. |
 | Arrastar com o botão esquerdo | Girar a câmera manual. |
 | Scroll | Aproximar ou afastar a câmera nos dois modos. |
 | `L` | Ativar/desativar a iluminação. |
@@ -77,7 +78,7 @@ Ilha gerada proceduralmente com patamares de areia e fundo submerso em degraus. 
 
 > **Vários tipos de objetos**: em vez de compor o cenário com apenas 03 tipos de objetos, tenha uns 07 tipos diferentes para dar variedade
 
-O cenário tem oito tipos de objetos: coqueiros, samambaias, pedras, cocos, conchas, guarda-sol, catavento e base de fogueira. O catavento também atende ao objeto hierárquico obrigatório, com haste fixa e hélice giratória. Implementação em `src/cenario.js`.
+O cenário tem nove tipos de objetos: coqueiros, samambaias, pedras, cocos, conchas, guarda-sol, catavento, castelo de areia e base de fogueira. O catavento também atende ao objeto hierárquico obrigatório, com haste fixa e hélice giratória. Implementação em `src/cenario.js`.
 
 ### 4. Vento
 
@@ -128,7 +129,11 @@ A fogueira emite luz alaranjada com intensidade oscilante e atenuação por dist
 
 > **Skybox, skyphere ou skydome**: se considerarmos que nosso mundo está definido dentro de um cubo (skybox), podemos colocar uma imagem de textura em cada face interna (são 6) que represente o horizonte naquela direção.
 
-Céu em degradê azul, sem nuvens, usando uma textura cúbica de seis faces geradas proceduralmente no projeto. O fundo acompanha a câmera, sem aproximação das paredes ao usar zoom. A neblina mantém o tom branco suave original. Implementação em `src/ceu.js` e `src/shaders/ceu.*.glsl`.
+Céu em degradê azul, sem nuvens, usando uma textura cúbica de seis faces geradas proceduralmente no projeto. O fundo acompanha a câmera, sem aproximação das paredes ao usar zoom. A neblina tem tom claro durante o dia e azul-escuro durante a noite. Implementação em `src/ceu.js` e `src/shaders/ceu.*.glsl`.
+
+### Alternância manual Dia/Noite
+
+A tecla `3` e o botão **Dia/Noite** controlam uma transição de 1,5 segundo entre os dois ambientes. A lua possui halo e crateras; as estrelas cintilam no fundo. A iluminação noturna azulada mantém o cenário legível e destaca a fogueira. Esta alternância é manual: ainda não há passagem automática das horas para contar o opcional completo de ciclo dia/noite.
 
 ## Créditos
 

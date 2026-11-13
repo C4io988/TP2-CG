@@ -3,13 +3,15 @@ import { criarGeometriaPraia } from './praia.js';
 import { criarTexturasPraia } from './texturas.js';
 import { MATERIAIS } from './materiais.js';
 
-// Y é vertical; o cenário ocupa um quadrado de 32 × 32 no plano XZ.
+// Y é vertical; MEIA_BASE é o raio do diorama circular no plano XZ.
 export const MEIA_BASE = 16;
 export const ALTURA_SUPERFICIE = 0.22;
-export const ALTURA_BASE = 5;
+export const ALTURA_BASE = MEIA_BASE;
 
 export function criarBase(gl) {
-  const bloco = primitives.createCubeBufferInfo(gl, 1);
+  const casco = primitives.createSphereBufferInfo(gl, MEIA_BASE, 128, 48, Math.PI / 2, Math.PI);
+  const aro = primitives.createTorusBufferInfo(gl, MEIA_BASE - 0.03, 0.24, 128, 16);
+  const botao = primitives.createSphereBufferInfo(gl, 1, 32, 16);
   const praia = criarGeometriaPraia(MEIA_BASE - 0.18);
   const texturas = criarTexturasPraia(gl);
   const areia = createBufferInfoFromArrays(gl, praia.areia);
@@ -22,25 +24,22 @@ export function criarBase(gl) {
   }
 
   const partes = [
-    // A camada superior agora é oca, deixando espaço para o fundo do mar.
-    part(bloco, [0.92, 0.94, 0.96], [0, -1.89, 0], [MEIA_BASE * 2, 0.2, MEIA_BASE * 2]),
-    part(bloco, [0.92, 0.94, 0.96], [0, -2.7, 0], [MEIA_BASE * 2 - 3, 1.8, MEIA_BASE * 2 - 3]),
-    part(bloco, [0.92, 0.94, 0.96], [0, -(ALTURA_BASE - 0.7), 0], [MEIA_BASE * 2 - 7, 1.4, MEIA_BASE * 2 - 7]),
+    part(casco, [0.92, 0.94, 0.96], [0, -0.20, 0]),
+    { ...part(aro, [0.055, 0.065, 0.08], [0, 0.03, 0]), material: MATERIAIS.borda },
     { ...part(areia, [1, 1, 1], [0, ALTURA_SUPERFICIE, 0]), texture: texturas.areia, material: MATERIAIS.areia },
     { ...part(lateral, [1, 1, 1], [0, ALTURA_SUPERFICIE, 0]), texture: texturas.areia, material: MATERIAIS.areia },
     { ...part(fundo, [0.76, 0.85, 0.78], [0, ALTURA_SUPERFICIE, 0]), texture: texturas.areia, material: MATERIAIS.areia },
   ];
-  const espessura = 0.18, centro = MEIA_BASE - espessura / 2;
-  const dentro = MEIA_BASE * 2 - espessura * 2;
-  for (const lado of [-1, 1]) {
-    for (const eixo of ['x', 'z']) {
-      const posicao = eixo === 'x' ? [lado * centro, -1, 0] : [0, -1, lado * centro];
-      const tamanho = eixo === 'x' ? [espessura, 1.6, MEIA_BASE * 2] : [dentro, 1.6, espessura];
-      partes.push(part(bloco, [0.92, 0.94, 0.96], posicao, tamanho));
-      const borda = eixo === 'x' ? [lado * centro, 0.03, 0] : [0, 0.03, lado * centro];
-      partes.push({ ...part(bloco, [0.10, 0.12, 0.15], borda, [tamanho[0], 0.46, tamanho[2]]),
-        material: MATERIAIS.borda });
-    }
+  // Fecho frontal em relevo, alinhado com a câmera inicial.
+  const frente = m4.rotationY(0.35);
+  for (const [raio, profundidade, cor] of [
+    [1.65, 0.40, [0.055, 0.065, 0.08]],
+    [1.22, 0.48, [0.97, 0.98, 1]],
+    [0.83, 0.53, [0.82, 0.87, 0.91]],
+  ]) {
+    const fecho = part(botao, cor, [0, -0.28, MEIA_BASE], [raio, raio, profundidade]);
+    fecho.world = m4.multiply(frente, fecho.world);
+    partes.push(fecho);
   }
   const superficieAgua = { ...part(agua, [1, 1, 1], [0, ALTURA_SUPERFICIE, 0]),
     texture: texturas.agua, material: MATERIAIS.agua };

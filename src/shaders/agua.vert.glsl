@@ -17,7 +17,7 @@ varying mediump float v_depth;
 
 void main() {
   vec4 worldPosition = u_world * position;
-  float edge = min(u_extent - abs(worldPosition.x), u_extent - abs(worldPosition.z));
+  float edge = u_extent - length(worldPosition.xz);
   float fade = smoothstep(0.0, 0.65, edge) * clamp(depth / 0.9, 0.0, 1.0);
   vec2 transversal = vec2(-u_ventoDirecao.y, u_ventoDirecao.x);
   float phaseA = dot(worldPosition.xz, u_ventoDirecao) * 0.85 - u_time * 1.6 - u_ventoDeslocamento * 0.45;

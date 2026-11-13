@@ -5,7 +5,7 @@ export function alturaOnda(x, z, tempo, profundidade) {
   // Mesma função de deslocamento de agua.vert.glsl, para o Shellder flutuar junto.
   const vento = ventoNoTempo(tempo);
   const [dx, dz] = vento.direcao;
-  const borda = Math.min(MEIA_BASE - 0.18 - Math.abs(x), MEIA_BASE - 0.18 - Math.abs(z));
+  const borda = MEIA_BASE - 0.18 - Math.hypot(x, z);
   const t = Math.max(0, Math.min(1, borda / 0.65));
   const fade = t * t * (3 - 2 * t) * Math.max(0, Math.min(1, profundidade / 0.9));
   const faseA = (x * dx + z * dz) * 0.85 - tempo * 1.6 - vento.deslocamento * 0.45;
