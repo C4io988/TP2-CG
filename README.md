@@ -8,6 +8,8 @@ Um diorama de praia inspirado no estilo em blocos do Minecraft, com Slowpoke pas
 
 Slowpoke possui quatro poses: em pé, dormindo deitado, deitado acordado e deitado na margem com a cauda na água. Na quarta pose, após uma espera de 5 segundos, Shellder se aproxima e morde a cauda. Um efeito de brilho e partículas revela Slowbro, que retorna ao interior da ilha e passa a caminhar pelo cenário.
 
+A margem frontal tem uma pequena enseada para Shellder circular e se alinhar à cauda dentro da pokébola. A pose de evolução fica um pouco mais para o interior, mantendo espaço para a aproximação e para o retorno de Slowbro.
+
 O fundo é um skybox com céu em degradê azul durante o dia e céu escuro com lua e estrelas cintilantes à noite. O botão **Dia/Noite** e a tecla `3` alternam o período em 1,5 segundo, ajustando também a luz ambiente, a luz direcional e a neblina. O céu acompanha a câmera e destaca a base branca da pokébola. A neblina tem tom claro durante o dia e azul-escuro durante a noite.
 
 A cena possui duas câmeras, iluminação Blinn-Phong, texturas pixeladas, água transparente com ondas e textura animada, vento na vegetação e neblina. A fogueira permanece acesa com chamas em blocos animados e uma luz pontual alaranjada que oscila e ilumina os objetos próximos. Os personagens seguem caminhos internos que consideram terreno, obstáculos e limites da base.

@@ -8,7 +8,8 @@ export function criarPoses() {
     { nome: 'centro', local: [-3, 0], angulo: Math.PI + 0.35 },
     { nome: 'dormindoDeitado', local: [9.5, 0], angulo: Math.PI + 0.35 },
     { nome: 'deitadoAcordado', local: [-1, -1.4], angulo: 0.35 - Math.PI / 2 },
-    { nome: 'caudaNaAgua', local: [12, 0.3], angulo: 0.35, inclinacaoCauda: 25 },
+    // Reserva espaço entre a cauda e o casco para a concha se alinhar à mordida.
+    { nome: 'caudaNaAgua', local: [10, 0.3], angulo: 0.35, inclinacaoCauda: 25 },
   ].map(pose => {
     const [x, z] = posicaoNaPraia(...pose.local);
     return { ...pose, x, z };

@@ -149,7 +149,8 @@ export function criarPasseioSlowpoke(navegacao, inicio, aleatorio = Math.random)
 
   function planejar(destino, area = 'terra', anguloFinal = null) {
     const origem = pontoAtual();
-    const entradas = anguloFinal === null ? [null] : [1.8, 2.4, 1.2, 0.8, 3.0];
+    // Entradas curtas permitem alinhar a pose junto à enseada sem pisar na água.
+    const entradas = anguloFinal === null ? [null] : [1.8, 2.4, 1.2, 0.8, 3.0, 0.4, 0.2];
     for (const entrada of entradas) {
       const pontoEntrada = entrada === null ? destino
         : { x: destino.x + Math.sin(anguloFinal) * entrada,

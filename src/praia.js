@@ -25,7 +25,9 @@ export function criarGeometriaPraia(meiaLargura, divisoes = 64) {
     const ligacao = 1 - suave((distanciaAtras - 0.25) / 0.65);
     const [dx, dz] = posicaoNaPraia(Math.cos(angulo), Math.sin(angulo));
     const bordaQuadrada = meiaLargura / Math.max(Math.abs(dx), Math.abs(dz));
-    return bordaQuadrada * (formato + 0.5 * ligacao);
+    // Recuo suave da margem frontal abre uma enseada dentro do casco circular.
+    const enseada = 2.3 * Math.exp(-Math.pow((angulo + 0.12) / 0.48, 2));
+    return bordaQuadrada * (formato + 0.5 * ligacao) - enseada;
   }
 
   // Cada célula é um bloco plano. A mesma altura serve ao desenho e ao personagem.
@@ -144,8 +146,8 @@ export function criarGeometriaPraia(meiaLargura, divisoes = 64) {
     }
     return pontos;
   }
-  function adicionarFace(dados, pontos, normal, tamanhoTextura) {
-    pontos = recortar(pontos);
+  function adicionarFace(dados, pontos, normal, tamanhoTextura, recortarBorda = true) {
+    if (recortarBorda) pontos = recortar(pontos);
     if (pontos.length < 3) return;
     const inicio = dados.position.length / 3;
     for (const [x, y, z] of pontos) {
@@ -165,8 +167,22 @@ export function criarGeometriaPraia(meiaLargura, divisoes = 64) {
       const x0 = -meiaLargura + coluna * tamanhoBloco, x1 = x0 + tamanhoBloco;
       const z0 = -meiaLargura + linha * tamanhoBloco, z1 = z0 + tamanhoBloco;
       const y = alturaCelula(coluna, linha);
-      adicionarFace(y > 0 ? areia : agua,
-        [[x0, y, z0], [x0, y, z1], [x1, y, z1], [x1, y, z0]], [0, 1, 0], y > 0 ? 2 : 4);
+      const topo = recortar([[x0, y, z0], [x0, y, z1], [x1, y, z1], [x1, y, z0]]);
+      adicionarFace(y > 0 ? areia : agua, topo, [0, 1, 0], y > 0 ? 2 : 4, false);
+      // O recorte circular cria arestas novas que não pertencem aos quatro
+      // lados da célula. Fecha essas arestas até dentro do casco, evitando
+      // enxergar o céu por baixo da areia ao olhar a ilha por trás.
+      for (let i = 0; i < topo.length; i++) {
+        const a = topo[i], b = topo[(i + 1) % topo.length];
+        const mx = (a[0] + b[0]) / 2, mz = (a[2] + b[2]) / 2;
+        if (Math.hypot(mx, mz) < apotema - 0.000001) continue;
+        const dx = b[0] - a[0], dz = b[2] - a[2];
+        const comprimento = Math.hypot(dx, dz);
+        if (comprimento < 0.000001) continue;
+        adicionarFace(y > 0 ? lateral : fundo,
+          [[a[0], -3, a[2]], [b[0], -3, b[2]], b, a],
+          [-dz / comprimento, 0, dx / comprimento], 2, false);
+      }
       if (y === 0) {
         const chao = -profundidadeCelula(coluna, linha);
         adicionarFace(fundo, [[x0, chao, z0], [x0, chao, z1],
