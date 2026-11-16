@@ -1,3 +1,4 @@
+import { iniciarSom } from './som.js?v=icone';
 import * as twgl from '../vendor/twgl-full.module.js';
 import { criarBase, ALTURA_SUPERFICIE } from './base.js';
 import { criarCameras } from './cameras.js';
@@ -20,7 +21,8 @@ import { criarCeu } from './ceu.js?v=dia-noite';
 const canvas = document.querySelector('#cena');
 const errorMessage = document.querySelector('#erro');
 const modoPoses = document.querySelector('#modo-poses');
-const botaoDiaNoite = document.querySelector('#dia-noite');
+iniciarSom(document.querySelector('#musica-fundo'), document.querySelector('#som'),
+  document.querySelector('#aviso-som'));
 
 iniciar().catch(mostrarErro);
 
@@ -90,10 +92,7 @@ async function iniciar() {
   let iluminacaoAtiva = true;
   function alternarDiaNoite() {
     ambiente.alternarDiaNoite();
-    botaoDiaNoite.setAttribute('aria-pressed', String(ambiente.noturno));
-    botaoDiaNoite.textContent = ambiente.noturno ? '☾ Noite · Dia/Noite [3]' : '☀ Dia · Dia/Noite [3]';
   }
-  botaoDiaNoite.addEventListener('click', alternarDiaNoite);
 
   window.addEventListener('keydown', evento => {
     const foco = document.activeElement;

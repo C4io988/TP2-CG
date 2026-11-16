@@ -8,12 +8,14 @@
     <link rel="preload" as="image" href="./assets/pokemon/textures/slowpoke.png">
     <link rel="preload" as="image" href="./assets/pokemon/textures/shellder.png">
     <link rel="preload" as="image" href="./assets/pokemon/textures/slowbro.png">
-    <link rel="stylesheet" href="./styles.css?v=dia-noite">
+    <link rel="stylesheet" href="./styles.css?v=som-icone">
   </head>
   <body>
     <main>
       <canvas id="cena" tabindex="0" aria-label="Ilha em blocos sobre uma base hemisférica de pokébola"></canvas>
-      <button id="dia-noite" type="button" aria-label="Alternar Dia/Noite" aria-pressed="false">☀ Dia · Dia/Noite [3]</button>
+      <button id="som" type="button" aria-label="Ligar música" aria-pressed="false"><img src="./assets/icons/som-desligado.png" alt="" width="32" height="32"></button>
+      <audio id="musica-fundo" src="./assets/audio/musica-fundo.m4a" loop muted preload="none"></audio>
+      <p id="aviso-som" role="status"></p>
       <details class="comandos">
         <summary>Comandos</summary>
         <div class="modo-poses">
@@ -38,6 +40,6 @@
       </details>
       <p id="erro" role="alert" hidden></p>
     </main>
-    <script type="module" src="./src/main.js?v=dia-noite-2"></script>
+    <script type="module" src="./src/main.js?v=som-icone"></script>
   </body>
 </html>

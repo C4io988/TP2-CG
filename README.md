@@ -10,7 +10,7 @@ Slowpoke possui quatro poses: em pé, dormindo deitado, deitado acordado e deita
 
 A margem frontal tem uma pequena enseada para Shellder circular e se alinhar à cauda dentro da pokébola. A pose de evolução fica um pouco mais para o interior, mantendo espaço para a aproximação e para o retorno de Slowbro.
 
-O fundo é um skybox com céu em degradê azul durante o dia e céu escuro com lua e estrelas cintilantes à noite. O botão **Dia/Noite** e a tecla `3` alternam o período em 1,5 segundo, ajustando também a luz ambiente, a luz direcional e a neblina. O céu acompanha a câmera e destaca a base branca da pokébola. A neblina tem tom claro durante o dia e azul-escuro durante a noite.
+O fundo é um skybox com céu em degradê azul durante o dia e céu escuro com lua e estrelas cintilantes à noite. A tecla `3` alterna o período em 1,5 segundo, ajustando também a luz ambiente, a luz direcional e a neblina. O céu acompanha a câmera e destaca a base branca da pokébola. A neblina tem tom claro durante o dia e azul-escuro durante a noite.
 
 A cena possui duas câmeras, iluminação Blinn-Phong, texturas pixeladas, água transparente com ondas e textura animada, vento na vegetação e neblina. A fogueira permanece acesa com chamas em blocos animados e uma luz pontual alaranjada que oscila e ilumina os objetos próximos. Os personagens seguem caminhos internos que consideram terreno, obstáculos e limites da base.
 
@@ -24,7 +24,8 @@ Abra a pasta do projeto no Visual Studio Code e inicie `index.html` pela extens�
 | --- | --- |
 | `1` | Câmera automática, orbitando o centro a aproximadamente 45° acima do chão. |
 | `2` | Câmera orbital manual. |
-| `3` ou botão **Dia/Noite** | Alternar entre dia e noite com transição suave. |
+| `3` | Alternar entre dia e noite com transição suave. |
+| Botão **Som** | Ligar ou pausar a música de fundo em loop. Começa desligado. |
 | Arrastar com o botão esquerdo | Girar a câmera manual. |
 | Scroll | Aproximar ou afastar a câmera nos dois modos. |
 | `L` | Ativar/desativar a iluminação. |
@@ -37,7 +38,7 @@ No painel **Comandos**, o seletor **Troca de poses** permite caminhar até a pos
 
 Antes da mordida, `P` e `M` podem cancelar a aproximação de Shellder. Durante a mordida e a transformação, essas teclas ficam bloqueadas. Após a evolução, Slowbro mantém uma postura padrão: `P` não altera sua pose e `M` controla seu passeio. `R` funciona em qualquer fase e preserva as configurações de câmera, iluminação e neblina.
 
-A cena não reproduz áudio. Os sons originais estão separados para escuta manual em [ouvir.html](assets/sons-para-ouvir/ouvir.html).
+A música de fundo toca em loop e começa desligada. O botão **Som**, no canto superior direito, permite ligar, pausar e retomar a reprodução. Os sons originais estão separados para escuta manual em [ouvir.html](assets/sons-para-ouvir/ouvir.html).
 
 ## Criador(es)
 
@@ -62,7 +63,7 @@ Slowbro no cenário após a evolução.
 
 ## Opcionais
 
-Foram implementados **11 itens opcionais**. Os trechos em citação abaixo reproduzem as descrições dos respectivos requisitos do enunciado; em seguida, é descrita sua aplicação no projeto.
+Foram implementados **12 itens opcionais**. Os trechos em citação abaixo reproduzem as descrições dos respectivos requisitos do enunciado; em seguida, é descrita sua aplicação no projeto.
 
 ### 1. Modelos tridimensionais
 
@@ -133,11 +134,19 @@ A fogueira emite luz alaranjada com intensidade oscilante e atenuação por dist
 
 Céu em degradê azul, sem nuvens, usando uma textura cúbica de seis faces geradas proceduralmente no projeto. O fundo acompanha a câmera, sem aproximação das paredes ao usar zoom. A neblina tem tom claro durante o dia e azul-escuro durante a noite. Implementação em `src/ceu.js` e `src/shaders/ceu.*.glsl`.
 
+### 12. Música, efeitos sonoros e/ou som ambiente
+
+> **Música, efeitos sonoros e/ou som ambiente**: inclua música de fundo, sons ambiente e efeitos sonoros (este último, caso haja algum tipo de interação)
+
+Música de fundo em loop, ativada pelo botão de som e desligada ao abrir a página. Arquivo em `assets/audio/musica-fundo.m4a`; controle em `src/som.js`.
+
 ### Alternância manual Dia/Noite
 
-A tecla `3` e o botão **Dia/Noite** controlam uma transição de 1,5 segundo entre os dois ambientes. A lua possui halo e crateras; as estrelas cintilam no fundo. A iluminação noturna azulada mantém o cenário legível e destaca a fogueira. Esta alternância é manual: ainda não há passagem automática das horas para contar o opcional completo de ciclo dia/noite.
+A tecla `3` controla uma transição de 1,5 segundo entre os dois ambientes. A lua possui halo e crateras; as estrelas cintilam no fundo. A iluminação noturna azulada mantém o cenário legível e destaca a fogueira. Esta alternância é manual: ainda não há passagem automática das horas para contar o opcional completo de ciclo dia/noite.
 
 ## Créditos
+
+- **Música de fundo:** arquivo `videoplayback.m4a` fornecido pelo responsável pelo projeto, copiado para `assets/audio/musica-fundo.m4a`. Título, autoria e link de origem ainda não informados.
 
 - **Geometrias do cenário, texturas procedurais, skybox em degradê e efeito visual de evolução:** criados no projeto. O cenário adota uma estética em blocos inspirada em Minecraft; não utiliza arquivos de textura do Minecraft.
 - **TWGL.js 7.0.0:** [Gregg Tavares](https://github.com/greggman/twgl.js), sob [licença MIT](https://opensource.org/license/mit). A biblioteca está em `vendor/twgl-full.module.js`, com seus avisos de licença preservados.
