@@ -4,7 +4,9 @@ Trabalho Prático 2 de Computação Gráfica, desenvolvido em JavaScript, WebGL 
 
 ## A Cena
 
-Um diorama de praia inspirado no estilo em blocos do Minecraft, com Slowpoke passeando pela areia e Shellder nadando no mar. O diorama tem contorno circular, casco hemisférico branco, aro escuro e botão frontal, simulando uma pokébola aberta. O interior mantém o estilo em blocos. O cenário inclui relevo, coqueiros, samambaias, pedras, cocos, conchas, guarda-sol, catavento e uma base de fogueira.
+Um diorama de praia inspirado no estilo em blocos do Minecraft, com Slowpoke passeando pela areia e Shellder nadando no mar. O diorama tem contorno circular, casco hemisférico branco, aro escuro e botão frontal, simulando uma pokébola aberta. O interior mantém o estilo em blocos. O cenário inclui relevo, coqueiros, samambaias, pedras, cocos, conchas, guarda-sol, catavento, castelo de areia e uma base de fogueira.
+
+A tecla `4` fecha ou reabre a Great Ball. Quando fechada, ela tem tampa azul com duas faixas vermelhas contínuas em relevo, cinta preta, dobradiça traseira e botão branco frontal. Quando aberta, o botão fica menor e o interior do diorama fica visível. A troca é imediata e a simulação dos personagens continua durante o fechamento.
 
 Slowpoke possui quatro poses: em pé, dormindo deitado, deitado acordado e deitado na margem com a cauda na água. Na quarta pose, após uma espera de 5 segundos, Shellder se aproxima e morde a cauda. Um efeito de brilho e partículas revela Slowbro, que retorna ao interior da ilha e passa a caminhar pelo cenário.
 
@@ -16,7 +18,13 @@ A cena possui duas câmeras, iluminação Blinn-Phong, texturas pixeladas, água
 
 ### Como executar
 
-Abra a pasta do projeto no Visual Studio Code e inicie `index.html` pela extensão **Live Server**. A aplicação precisa ser servida por HTTP para carregar os módulos, modelos, texturas e shaders. Não há etapa de compilação nem instalação de pacotes.
+Abra a pasta do projeto no Visual Studio Code e inicie `index.html` pela extensão **Live Server**. Como alternativa, com Python instalado, execute na pasta que contém `index.html`:
+
+```sh
+python -m http.server 8000 --bind 127.0.0.1
+```
+
+Acesse [http://127.0.0.1:8000/](http://127.0.0.1:8000/) e mantenha o terminal aberto. A aplicação precisa ser servida por HTTP para carregar os módulos, modelos, texturas, shaders e sons. Não há etapa de compilação nem instalação de pacotes. Depois de atualizar os arquivos, use `Ctrl+Shift+R` caso o navegador mantenha uma versão anterior em cache.
 
 ### Controles
 
@@ -26,7 +34,7 @@ Abra a pasta do projeto no Visual Studio Code e inicie `index.html` pela extens�
 | `2` | Câmera orbital manual. |
 | `3` | Alternar entre dia e noite com transição suave. |
 | `4` | Fechar ou reabrir a Great Ball, com tampa azul e detalhes vermelhos. |
-| Botão **Som** | Ligar ou pausar a música de fundo em loop. Começa desligado. |
+| Ícone de som | Ligar/desligar a música e os efeitos sonoros. Começa desligado. |
 | Arrastar com o botão esquerdo | Girar a câmera manual. |
 | Scroll | Aproximar ou afastar a câmera nos dois modos. |
 | `L` | Ativar/desativar a iluminação. |
@@ -37,9 +45,15 @@ Abra a pasta do projeto no Visual Studio Code e inicie `index.html` pela extens�
 
 No painel **Comandos**, o seletor **Troca de poses** permite caminhar até a pose ou teletransportar para sua posição e orientação finais.
 
-Antes da mordida, `P` e `M` podem cancelar a aproximação de Shellder. Durante a mordida e a transformação, essas teclas ficam bloqueadas. Após a evolução, Slowbro mantém uma postura padrão: `P` não altera sua pose e `M` controla seu passeio. `R` funciona em qualquer fase e preserva as configurações de câmera, iluminação e neblina.
+Antes da mordida, `P` e `M` podem cancelar a aproximação de Shellder. Durante a mordida e a transformação, essas teclas ficam bloqueadas. Após a evolução, Slowbro mantém uma postura padrão: `P` não altera sua pose e `M` controla seu passeio. `R` funciona em qualquer fase, interrompe os efeitos sonoros e reinicia seus contadores, preservando as configurações de câmera, iluminação, neblina e abertura da bola.
 
-A música de fundo toca em loop e começa desligada. O botão **Som**, no canto superior direito, permite ligar, pausar e retomar a reprodução. Os sons originais estão separados para escuta manual em [ouvir.html](assets/sons-para-ouvir/ouvir.html).
+### Áudio
+
+A música **The Slowpoke Song** toca em loop. O áudio começa desligado e é controlado por um ícone PNG no canto superior direito, que alterna entre som ligado e desligado, sem texto visível. O mesmo controle atua sobre a música, os chamados dos personagens e o efeito de evolução.
+
+Slowpoke chama a cada **6 segundos** e Shellder a cada **7 segundos**. Shellder tem um atraso inicial adicional de 0,5 segundo para evitar coincidências periódicas entre os chamados. Durante a transformação, os chamados de Slowpoke e Shellder são interrompidos e o som de evolução começa junto com o efeito visual. Slowbro chama ao aparecer e, após a transformação, passa a chamar a cada **4 segundos**.
+
+O volume configurado dos chamados e do efeito de evolução corresponde a **50% do volume configurado da música**. Os arquivos usados na cena estão em `assets/audio/`. Os sons de referência do Cobblemon continuam disponíveis separadamente para escuta manual em [ouvir.html](assets/sons-para-ouvir/ouvir.html).
 
 ## Criador(es)
 
@@ -49,6 +63,16 @@ A música de fundo toca em loop e começa desligada. O botão **Som**, no canto 
 | João Pedro da Silva Santos | [GitHub — joopedriantos](https://github.com/joopedriantos) |
 
 ## Media kit
+
+Modelo atual da Great Ball aberta, com base hemisférica, praia circular, castelo de areia, Slowpoke e Shellder.
+
+![Great Ball aberta com o diorama de praia e os Pokémon](docs/screenshots/great-ball-aberta.png)
+
+Great Ball fechada pela tecla `4`, mostrando a tampa azul, as faixas vermelhas e o botão frontal.
+
+![Great Ball fechada com tampa azul e faixas vermelhas](docs/screenshots/great-ball-fechada.png)
+
+As capturas abaixo registram a versão anterior do cenário, com base quadrada.
 
 Visão geral da ilha com Slowpoke na areia e Shellder na água.
 
@@ -133,13 +157,13 @@ A fogueira emite luz alaranjada com intensidade oscilante e atenuação por dist
 
 > **Skybox, skyphere ou skydome**: se considerarmos que nosso mundo está definido dentro de um cubo (skybox), podemos colocar uma imagem de textura em cada face interna (são 6) que represente o horizonte naquela direção.
 
-Céu em degradê azul, sem nuvens, usando uma textura cúbica de seis faces geradas proceduralmente no projeto. O fundo acompanha a câmera, sem aproximação das paredes ao usar zoom. A neblina tem tom claro durante o dia e azul-escuro durante a noite. Implementação em `src/ceu.js` e `src/shaders/ceu.*.glsl`.
+Céu diurno em degradê azul, sem nuvens, usando uma textura cúbica de seis faces geradas proceduralmente no projeto. O shader acrescenta céu escuro, lua com halo e crateras e estrelas cintilantes no modo noturno. O fundo acompanha a câmera, sem aproximação das paredes ao usar zoom. A neblina tem tom claro durante o dia e azul-escuro durante a noite. Implementação em `src/ceu.js` e `src/shaders/ceu.*.glsl`.
 
 ### 12. Música, efeitos sonoros e/ou som ambiente
 
 > **Música, efeitos sonoros e/ou som ambiente**: inclua música de fundo, sons ambiente e efeitos sonoros (este último, caso haja algum tipo de interação)
 
-Música de fundo em loop, ativada pelo botão de som e desligada ao abrir a página. Arquivo em `assets/audio/musica-fundo.m4a`; controle em `src/som.js`.
+Música de fundo em loop, chamados independentes de Slowpoke, Shellder e Slowbro e efeito sonoro sincronizado com o início da evolução. O ícone de som controla todo o áudio e começa desligado ao abrir a página. Arquivos em `assets/audio/`; implementação em `src/som.js` e `src/sons-personagens.js`. Os intervalos e volumes estão descritos em **Áudio**, na seção **A Cena**.
 
 ### Alternância manual Dia/Noite
 
@@ -147,14 +171,18 @@ A tecla `3` controla uma transição de 1,5 segundo entre os dois ambientes. A l
 
 ## Créditos
 
-- **Música de fundo:** arquivo `videoplayback.m4a` fornecido pelo responsável pelo projeto, copiado para `assets/audio/musica-fundo.m4a`. Título, autoria e link de origem ainda não informados.
+Os links abaixo são as referências dos áudios fornecidas pelos criadores do projeto.
 
-- **Geometrias do cenário, texturas procedurais, skybox em degradê e efeito visual de evolução:** criados no projeto. O cenário adota uma estética em blocos inspirada em Minecraft; não utiliza arquivos de textura do Minecraft.
+| Recurso | Referência | Arquivo usado na cena |
+| --- | --- | --- |
+| Música de fundo | [The Slowpoke Song](https://youtu.be/lOqy8cC72wA?si=WAk2EeKyvmkbBA4p) | `assets/audio/musica-fundo.m4a` |
+| Chamado de Shellder | [Shellder cry](https://youtu.be/cEQoXYPf7gQ) | `assets/audio/shellder.mp3` |
+| Chamado de Slowbro | [Slowbro cry](https://youtu.be/9Pdf1WVhSgA) | `assets/audio/slowbro.mp3` |
+| Chamado de Slowpoke | [Slowpoke cry](https://youtu.be/YClN3fKz56U) | `assets/audio/slowpoke.mp3` |
+| Efeito de evolução | Pokémon anime Evolution Sound Effect — arquivo fornecido; link de referência ainda não informado | `assets/audio/evolucao.mp3` |
+
+- **Geometrias do cenário, casco e tampa da Great Ball, castelo de areia, texturas procedurais, ícones de som, céu e efeito visual de evolução:** criados no projeto. O cenário adota uma estética em blocos inspirada em Minecraft; não utiliza arquivos de textura do Minecraft.
 - **TWGL.js 7.0.0:** [Gregg Tavares](https://github.com/greggman/twgl.js), sob [licença MIT](https://opensource.org/license/mit). A biblioteca está em `vendor/twgl-full.module.js`, com seus avisos de licença preservados.
-- **Modelos, texturas, animações de referência e sons de Slowpoke, Shellder e Slowbro:** equipe [Cobblemon](https://gitlab.com/cable-mc/cobblemon), versão 1.7.3. Consulte a [licença dos recursos](https://gitlab.com/cable-mc/cobblemon-assets/-/blob/master/LICENSE). As animações foram adaptadas para o projeto; os sons permanecem separados para escuta manual.
+- **Modelos, texturas, animações de referência e sons de Slowpoke, Shellder e Slowbro:** equipe [Cobblemon](https://gitlab.com/cable-mc/cobblemon), versão 1.7.3. Consulte a [licença dos recursos](https://gitlab.com/cable-mc/cobblemon-assets/-/blob/master/LICENSE). As animações foram adaptadas para o projeto; os sons do Cobblemon permanecem separados para escuta manual. Os chamados reproduzidos na cena utilizam os arquivos indicados na tabela acima.
 
 Detalhes sobre a procedência dos recursos em [`docs/origem-recursos.md`](docs/origem-recursos.md).
-
-### Sons dos personagens
-
-O ícone de som controla a música e todos os efeitos, inicialmente desligados. Slowpoke chama a cada 6 segundos; Shellder a cada 7 segundos, com defasagem inicial de 0,5 segundo para evitar coincidências periódicas. Os chamados param durante a transformação. O efeito de evolução começa junto com o brilho; Slowbro chama ao aparecer e, depois da transformação, a cada 4 segundos. A tecla `R` interrompe os efeitos e reinicia os contadores. Os MP3 foram fornecidos pelo responsável pelo projeto; autoria e links de origem ainda não informados.
