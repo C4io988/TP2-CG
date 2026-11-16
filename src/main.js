@@ -1,6 +1,6 @@
-import { iniciarSom } from './som.js?v=icone';
+import { iniciarSom } from './som.js?v=intervalos-6-7';
 import * as twgl from '../vendor/twgl-full.module.js';
-import { criarBase, ALTURA_SUPERFICIE } from './base.js';
+import { criarBase, ALTURA_SUPERFICIE } from './base.js?v=great-ball-arcos-2';
 import { criarCameras } from './cameras.js';
 import { carregarSlowpoke, carregarShellder, carregarSlowbro, carregarShaders } from './recursos.js?v=dia-noite';
 import { desenharModelo } from './cobblemon.js';
@@ -21,7 +21,7 @@ import { criarCeu } from './ceu.js?v=dia-noite';
 const canvas = document.querySelector('#cena');
 const errorMessage = document.querySelector('#erro');
 const modoPoses = document.querySelector('#modo-poses');
-iniciarSom(document.querySelector('#musica-fundo'), document.querySelector('#som'),
+const som = iniciarSom(document.querySelector('#musica-fundo'), document.querySelector('#som'),
   document.querySelector('#aviso-som'));
 
 iniciar().catch(mostrarErro);
@@ -47,11 +47,13 @@ async function iniciar() {
   const program = twgl.createProgramInfo(gl, [vertexShader, fragmentShader]);
   if (!program) throw new Error('Falha ao preparar os shaders.');
   const ceu = criarCeu(gl, shadersCeu);
-  const { partes: parts, agua: superficieAgua, alturaTerreno, profundidadeAgua } = criarBase(gl);
+  const { partes: parts, tampa, interior, agua: superficieAgua, alturaTerreno, profundidadeAgua } = criarBase(gl);
+  let pokebolaFechada = false;
   const agua = criarAgua(gl, superficieAgua, shadersAgua);
   const efeitoEvolucao = criarEfeitoEvolucao(gl, shadersEvolucao);
   const cenario = criarCenario(gl, alturaTerreno);
   parts.push(...cenario.partes);
+  for (const parte of cenario.partes) interior.add(parte);
   // Um pouco mais para o interior, com as quatro patas sobre o patamar de areia.
   const [slowpokeX, slowpokeZ] = posicaoNaPraia(-3);
   const slowpokePosition = [slowpokeX,
@@ -100,6 +102,7 @@ async function iniciar() {
       || ['INPUT', 'SELECT', 'TEXTAREA'].includes(foco?.tagName) || foco?.isContentEditable) return;
     const tecla = evento.key.toLowerCase();
     if (tecla === '3') alternarDiaNoite();
+    if (tecla === '4') pokebolaFechada = !pokebolaFechada;
     if (tecla === 'l') iluminacaoAtiva = !iluminacaoAtiva;
     if (tecla === 'n') ambiente.alternarNeblina();
     if (tecla === 'm' && !evolucao.bloqueada) {
@@ -120,6 +123,7 @@ async function iniciar() {
       nado.reiniciar();
       passeioSlowbro.reiniciar();
       evolucao.reiniciar();
+      som.reiniciar();
     }
   });
 
@@ -147,6 +151,8 @@ async function iniciar() {
       mostrarErro(erro);
     }
     passeioSlowbro.atualizar(delta);
+    som.atualizar(delta, { estado: evolucao.estado, slowbro: passeioSlowbro.visivel,
+      slowpoke: Boolean(slowpoke), shellder: Boolean(shellder) });
     modoPoses.disabled = evolucao.bloqueada || passeioSlowbro.visivel;
     twgl.resizeCanvasToDisplaySize(canvas, Math.min(window.devicePixelRatio || 1, 2));
     gl.viewport(0, 0, canvas.width, canvas.height);
@@ -165,7 +171,7 @@ async function iniciar() {
     };
     twgl.setUniforms(program, { ...iluminacao, u_brilhoEvolucao: 0, u_viewProjection: viewProjection });
     gl.enable(gl.CULL_FACE);
-    for (const part of parts) {
+    for (const part of pokebolaFechada ? [...parts.filter(p => !interior.has(p)), ...tampa] : parts) {
       twgl.setBuffersAndAttributes(gl, program, part.buffer);
       twgl.setUniforms(program, {
         ...part.material,
@@ -184,26 +190,28 @@ async function iniciar() {
       twgl.drawBufferInfo(gl, part.buffer);
     }
 
-    if (slowpoke && !passeioSlowbro.visivel) {
+    if (!pokebolaFechada && slowpoke && !passeioSlowbro.visivel) {
       // Rosto e ponta da cauda incluem planos sem espessura: desenhar os dois lados.
       gl.disable(gl.CULL_FACE);
       desenharModelo(gl, program, slowpoke.ossos, slowpoke.textura,
         passeio.animacao(), viewProjection,
         passeio.posicao, 0.18, passeio.angulo, MATERIAIS.slowpoke, evolucao.brilho);
     }
-    if (shellder && !passeioSlowbro.visivel) {
+    if (!pokebolaFechada && shellder && !passeioSlowbro.visivel) {
       gl.disable(gl.CULL_FACE);
       desenharModelo(gl, program, shellder.ossos, shellder.textura,
         nado.animacao(), viewProjection, nado.posicao, ESCALA_SHELLDER, nado.angulo, MATERIAIS.shellder, evolucao.brilho);
     }
-    if (slowbro && passeioSlowbro.visivel) {
+    if (!pokebolaFechada && slowbro && passeioSlowbro.visivel) {
       gl.disable(gl.CULL_FACE);
       desenharModelo(gl, program, slowbro.ossos, slowbro.textura,
         passeioSlowbro.animacao(), viewProjection, passeioSlowbro.posicao,
         ESCALA_SLOWBRO, passeioSlowbro.angulo, MATERIAIS.slowpoke, evolucao.brilho);
     }
-    efeitoEvolucao.desenhar(viewProjection, evolucao.centro, evolucao.progresso, iluminacao);
-    agua.desenhar(viewProjection, iluminacao, animationTime);
+    if (!pokebolaFechada) {
+      efeitoEvolucao.desenhar(viewProjection, evolucao.centro, evolucao.progresso, iluminacao);
+      agua.desenhar(viewProjection, iluminacao, animationTime);
+    }
     requestAnimationFrame(render);
   }
 

@@ -25,6 +25,7 @@ Abra a pasta do projeto no Visual Studio Code e inicie `index.html` pela extens�
 | `1` | Câmera automática, orbitando o centro a aproximadamente 45° acima do chão. |
 | `2` | Câmera orbital manual. |
 | `3` | Alternar entre dia e noite com transição suave. |
+| `4` | Fechar ou reabrir a Great Ball, com tampa azul e detalhes vermelhos. |
 | Botão **Som** | Ligar ou pausar a música de fundo em loop. Começa desligado. |
 | Arrastar com o botão esquerdo | Girar a câmera manual. |
 | Scroll | Aproximar ou afastar a câmera nos dois modos. |
@@ -153,3 +154,7 @@ A tecla `3` controla uma transição de 1,5 segundo entre os dois ambientes. A l
 - **Modelos, texturas, animações de referência e sons de Slowpoke, Shellder e Slowbro:** equipe [Cobblemon](https://gitlab.com/cable-mc/cobblemon), versão 1.7.3. Consulte a [licença dos recursos](https://gitlab.com/cable-mc/cobblemon-assets/-/blob/master/LICENSE). As animações foram adaptadas para o projeto; os sons permanecem separados para escuta manual.
 
 Detalhes sobre a procedência dos recursos em [`docs/origem-recursos.md`](docs/origem-recursos.md).
+
+### Sons dos personagens
+
+O ícone de som controla a música e todos os efeitos, inicialmente desligados. Slowpoke chama a cada 6 segundos; Shellder a cada 7 segundos, com defasagem inicial de 0,5 segundo para evitar coincidências periódicas. Os chamados param durante a transformação. O efeito de evolução começa junto com o brilho; Slowbro chama ao aparecer e, depois da transformação, a cada 4 segundos. A tecla `R` interrompe os efeitos e reinicia os contadores. Os MP3 foram fornecidos pelo responsável pelo projeto; autoria e links de origem ainda não informados.

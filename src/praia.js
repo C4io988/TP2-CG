@@ -150,7 +150,15 @@ export function criarGeometriaPraia(meiaLargura, divisoes = 64) {
     if (recortarBorda) pontos = recortar(pontos);
     if (pontos.length < 3) return;
     const inicio = dados.position.length / 3;
-    for (const [x, y, z] of pontos) {
+    for (let [x, y, z] of pontos) {
+      // Recolhe o fundo e as paredes sob a curvatura do casco. Uma parede
+      // vertical no raio da borda atravessaria o hemisfério mais abaixo.
+      if (y < -0.42) {
+        const raioCasco = meiaLargura + 0.18;
+        const limite = Math.sqrt(Math.max(0, (raioCasco - 0.08) ** 2 - (y + 0.42) ** 2));
+        const raio = Math.hypot(x, z);
+        if (raio > limite) { x *= limite / raio; z *= limite / raio; }
+      }
       dados.position.push(x, y, z);
       dados.normal.push(...normal);
       dados.texcoord.push((normal[1] ? x : x + z) / tamanhoTextura,
